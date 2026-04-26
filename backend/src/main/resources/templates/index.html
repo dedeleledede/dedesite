@@ -9,6 +9,10 @@
     <h1 th:if="${#authorization.expression('isAuthenticated()')}">
         Bem-vinda(o), <span th:text="${#authentication.name}">usuário</span>!
     </h1>
+
+    <p th:unless="${#authorization.expression('isAuthenticated()')}">
+        Explore the blog, projects, guestbook, and other sections.
+    </p>
 </section>
 </body>
 
