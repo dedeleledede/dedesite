@@ -1,0 +1,36 @@
+name: Server control
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Action to run"
+        required: true
+        default: "deploy"
+        type: choice
+        options:
+          - deploy
+          - restart
+          - start
+          - stop
+          - logs
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run server action
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            ACTION="${{ github.event.inputs.action }}"
+            if [ -z "$ACTION" ]; then ACTION="deploy"; fi
+            sudo /usr/local/bin/dedesite-control "$ACTION"
