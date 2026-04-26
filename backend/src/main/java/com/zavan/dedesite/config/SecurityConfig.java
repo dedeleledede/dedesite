@@ -45,7 +45,7 @@ public class SecurityConfig {
                 // arquivos públicos (imagens)
                 .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 // páginas públicas
-                .requestMatchers("/", "/blog", "/blog/**", "/login", "/register").permitAll()
+                .requestMatchers("/", "/blog", "/blog/**", "/login", "/health").permitAll()
                 // estáticos comuns (se tiver)
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 // upload restrito (mas também há @PreAuthorize no controller)

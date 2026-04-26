@@ -13,6 +13,7 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    /*
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
@@ -29,7 +30,8 @@ public class AuthController {
             return "register";
         }
     }
-    
+    */
+
     @GetMapping("/login")
     public String login() {
         return "login";
