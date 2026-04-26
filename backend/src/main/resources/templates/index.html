@@ -1,20 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <title>Home - Esther</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
+
 <body>
-
-<!-- Importa o fragmento do menu -->
-<div th:replace="fragments :: navbar"></div>
-
-<h1 th:if="${#authorization.expression('isAuthenticated()')}">
-    Bem-vinda(o), <span th:text="${#authentication.name}">usuário</span>!
-</h1>
-
-<!-- Importa o rodapé -->
-<div th:replace="fragments :: footer"></div>
-
+<section>
+    <h1 th:if="${#authorization.expression('isAuthenticated()')}">
+        Bem-vinda(o), <span th:text="${#authentication.name}">usuário</span>!
+    </h1>
+</section>
 </body>
+
 </html>

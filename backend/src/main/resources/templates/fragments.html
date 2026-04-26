@@ -1,14 +1,10 @@
 <!-- fragments.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:replace="~{::title}">Esther's Site</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+
 <body>
 
-<!-- 🌐 NAVBAR -->
+<!-- NAVBAR -->
 <div th:fragment="navbar">
     <nav>
         <a th:href="@{/}">Home</a> |
@@ -25,7 +21,7 @@
     </nav>
 </div>
 
-<!-- 🔻 FOOTER -->
+<!-- FOOTER -->
 <div th:fragment="footer">
     <footer>
         <p>&copy; 2026 esthermalware. All rights reserved.</p>
