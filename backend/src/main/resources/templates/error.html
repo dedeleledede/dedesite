@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
 <head>
     <title>Erro</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
+
 <body>
+<section>
     <h1>Algo deu errado D:</h1>
     <p>Estamos trabalhando nisso. Volte mais tarde.</p>
+</section>
 </body>
+
 </html>

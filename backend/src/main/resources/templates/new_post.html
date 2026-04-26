@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
 <head>
     <title>Blog Nova Postagem</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
@@ -9,9 +10,7 @@
 </head>
 
 <body>
-
-<!-- Importa o fragmento do menu -->
-<div th:replace="fragments :: navbar"></div>
+<section>
     
     <h1>Nova Postagem</h1>
     
@@ -33,10 +32,7 @@
             <a th:href="@{/blog}" style="margin-left:10px;">Voltar para o blog</a>
         </div>
     </form>
-    
-<!-- Importa o rodapé -->
-<div th:replace="fragments :: footer"></div>
-    
+
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <script>
     const token  = document.querySelector('meta[name="_csrf"]')?.content;
@@ -81,5 +77,6 @@
     }
 </script>
 
+</section>
 </body>
 </html>

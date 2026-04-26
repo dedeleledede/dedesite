@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
 <head>
     <title>Cadastro</title>
 </head>
 <body>
+<section>
 <h2>Cadastro</h2>
 
 <form th:action="@{/register}" th:object="${user}" method="post">
@@ -19,7 +21,6 @@
 
 <a th:href="@{/login}">Já tem conta? Faça login</a>
 
-<div th:replace="fragments :: footer"></div>
-
+</section>
 </body>
 </html>
