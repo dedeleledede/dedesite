@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Health - Esther</title>
+</head>
+
+<body>
+<section class="health-page">
+    <div class="health-card">
+        <div class="health-status">ONLINE</div>
+
+        <h1>dedesite is running</h1>
+
+        <div class="health-grid">
+            <div>
+                <span>Application</span>
+                <strong>Spring Boot</strong>
+            </div>
+
+            <div>
+                <span>Server</span>
+                <strong>theconstellation</strong>
+            </div>
+
+            <div>
+                <span>Deploy</span>
+                <strong>Auto-pull from GitHub</strong>
+            </div>
+
+            <div>
+                <span>Status</span>
+                <strong>OK</strong>
+            </div>
+        </div>
+
+        <a class="button" th:href="@{/}">Return home</a>
+    </div>
+</section>
+</body>
+</html>
