@@ -35,7 +35,14 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()
-            )   
+            )
+
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        response.sendRedirect("/access-denied");
+                    })
+                    .accessDeniedPage("/access-denied")
+            )
                 
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf
@@ -45,9 +52,9 @@ public class SecurityConfig {
                 // arquivos públicos (imagens)
                 .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 // páginas públicas
-                .requestMatchers("/", "/blog", "/blog/**", "/login", "/health").permitAll()
+                .requestMatchers("/", "/blog", "/blog/**", "/login", "/register", "/health", "/access-denied", "/error").permitAll()
                 // estáticos comuns (se tiver)
-                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
                 // upload restrito (mas também há @PreAuthorize no controller)
                 .requestMatchers("/api/uploads/**").hasAnyRole("ADMIN", "AUTHOR")
                 .anyRequest().authenticated()
