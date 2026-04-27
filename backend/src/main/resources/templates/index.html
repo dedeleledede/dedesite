@@ -5,14 +5,64 @@
 </head>
 
 <body>
-<section>
+<section class="home-page">
     <h1 th:if="${#authorization.expression('isAuthenticated()')}">
-        Bem-vinda(o), <span th:text="${#authentication.name}">usuário</span>!
+        Welcome, <span th:text="${#authentication.name}">user</span>!
     </h1>
 
     <p th:unless="${#authorization.expression('isAuthenticated()')}">
-        Explore the blog, projects, guestbook, and other sections.
+        wazzap?
     </p>
+
+    <p class="hero-text">
+        This is my corner of the internet for whatever comes to mind. Feel free to explore what secrets are hiding!
+    </p>
+
+    <div class="hero-actions">
+        <a class="button primary" th:href="@{/blog}">Read the blog</a>
+        <a class="button" th:href="@{/projects}">See projects</a>
+        <a class="button" th:href="@{/guestbook}">Sign guestbook</a>
+    </div>
+
+    <div class="home-grid">
+        <article class="window-card">
+            <div class="window-title">latest writing</div>
+            <h2>Blog</h2>
+            <p>longer posts(prob not), updates, notes, logs, thoughts, and site progress</p>
+            <a th:href="@{/blog}">Open blog →</a>
+        </article>
+
+        <article class="window-card">
+            <div class="window-title">things i'm building</div>
+            <h2>Projects</h2>
+            <p>software, experiments, unfinished ideas, web tools, etc</p>
+            <a th:href="@{/projects}">Open projects →</a>
+        </article>
+
+        <article class="window-card">
+            <div class="window-title">leave something</div>
+            <h2>Guestbook</h2>
+            <p>place for visitors to leave messages if u wanna</p>
+            <a th:href="@{/guestbook}">Open guestbook →</a>
+        </article>
+
+        <article class="window-card">
+            <div class="window-title">profile</div>
+            <h2>About</h2>
+            <p>Who I am, what I like, what I make</p>
+            <a th:href="@{/profile}">Open profile →</a>
+        </article>
+    </div>
+
+    <section class="status-panel">
+        <div>
+            <h2>site status</h2>
+            <p>Running from <strong>theconstellation</strong>, deployed automatically from GitHub.</p>
+            <p>last update: {date}</p>
+        </div>
+        <a class="button" th:href="@{/health}">Check health</a>
+    </section>
+
 </section>
 </body>
 
