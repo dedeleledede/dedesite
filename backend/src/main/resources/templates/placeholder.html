@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${pageTitle} + ' - Esther'">Page - Esther</title>
+</head>
+
+<body>
+<section class="placeholder-page">
+    <h1 th:text="${pageTitle}">page</h1>
+    <p th:text="${pageText}">coming soon.</p>
+    <a class="button" th:href="@{/}">back home</a>
+</section>
+</body>
+</html>

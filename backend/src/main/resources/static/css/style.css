@@ -1902,3 +1902,46 @@ article,
     border: 2px solid #080808;
 }
 
+/* ADMIN ERROR DETAILS */
+
+.admin-error-panel {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    border: 2px solid var(--blood);
+    padding: 1rem;
+    background: rgba(8, 8, 8, 0.92);
+}
+
+.error-details {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.error-details div {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 0.75rem;
+    border-top: 1px solid var(--paper);
+    padding-top: 0.5rem;
+}
+
+.error-details dt {
+    color: var(--gray);
+    text-transform: uppercase;
+}
+
+.error-details dd {
+    margin: 0;
+    color: var(--paper);
+    overflow-wrap: anywhere;
+    font-family: ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace;
+}
+
+@media (max-width: 560px) {
+    .error-details div {
+        grid-template-columns: 1fr;
+    }
+}
+
