@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.zavan</groupId>
 	<artifactId>dedesite</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>dedesite</name>
 	<description>Personal dynamic site for Esther</description>
 	<url/>

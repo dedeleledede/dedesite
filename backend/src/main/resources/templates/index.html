@@ -5,64 +5,75 @@
 </head>
 
 <body>
-<section class="home-page">
-    <h1 th:if="${#authorization.expression('isAuthenticated()')}">
-        Welcome, <span th:text="${#authentication.name}">user</span>!
-    </h1>
+<section class="home-page poster-home">
+    <section class="poster-lead">
+        <div class="poster-frame">
+            <p class="poster-code">visitor file <span th:text="${#numbers.formatInteger(visitorNumber, 3)}">001</span></p>
+            <h1 th:if="${#authorization.expression('isAuthenticated()')}">
+                WELCOME <span class="welcome-identity" th:text="${#authentication.name}">username</span>
+            </h1>
+            <h1 th:unless="${#authorization.expression('isAuthenticated()')}">
+                WELCOME USER <span class="welcome-identity" th:text="${#numbers.formatInteger(visitorNumber, 3)}">001</span>
+            </h1>
+            <p class="hero-text">
+                my corner of the internet for blog posts, projects, music notes, guestbook traces, and whatever else gets wired in next.
+            </p>
+        </div>
 
-    <p th:unless="${#authorization.expression('isAuthenticated()')}">
-        wazzap?
-    </p>
+        <aside class="poster-readout">
+            <div>
+                <span>last update</span>
+                <strong th:text="${lastUpdateDistance}">just now</strong>
+            </div>
+            <div class="guestbook-readout" th:if="${latestGuestbookEntry != null}">
+                <span>guestbook signal</span>
+                <strong th:text="${latestGuestbookEntry.name}">visitor</strong>
+                <p class="guestbook-readout-excerpt" th:text="${latestGuestbookEntry.message}">short guestbook text</p>
+            </div>
+            <div class="guestbook-readout" th:unless="${latestGuestbookEntry != null}">
+                <span>guestbook signal</span>
+                <strong>empty</strong>
+                <p class="guestbook-readout-excerpt">no messages yet</p>
+            </div>
+            <a class="button primary" th:href="@{/guestbook}">sign guestbook</a>
+        </aside>
+    </section>
 
-    <p class="hero-text">
-        This is my corner of the internet for whatever comes to mind. Feel free to explore what secrets are hiding!
-    </p>
+    <section class="latest-post-strip" th:if="${latestPost != null}">
+        <div class="strip-label">most recent blog post</div>
+        <blockquote>
+            <h2 th:text="${latestPost.title}">post title</h2>
+            <p th:text="${latestPost.content}">post excerpt</p>
+            <footer>
+                <time th:datetime="${latestPost.createdAt}"
+                      th:text="${#temporals.format(latestPost.createdAt, 'dd/MM/yyyy HH:mm')}">
+                    date
+                </time>
+                <a th:href="@{/blog}">read blog</a>
+            </footer>
+        </blockquote>
+    </section>
 
-    <div class="hero-actions">
-        <a class="button primary" th:href="@{/blog}">Read the blog</a>
-        <a class="button" th:href="@{/projects}">See projects</a>
-        <a class="button" th:href="@{/guestbook}">Sign guestbook</a>
-    </div>
+    <section class="latest-post-strip empty" th:unless="${latestPost != null}">
+        <div class="strip-label">most recent blog post</div>
+        <p>No blog posts yet.</p>
+    </section>
 
-    <div class="home-grid">
-        <article class="window-card">
-            <div class="window-title">latest writing</div>
-            <h2>Blog</h2>
-            <p>longer posts(prob not), updates, notes, logs, thoughts, and site progress</p>
-            <a th:href="@{/blog}">Open blog →</a>
-        </article>
+    <nav class="poster-directory" aria-label="site sections">
+        <a th:href="@{/blog}">Blog</a>
+        <a th:href="@{/projects}">Projects</a>
+        <a th:href="@{/guestbook}">Guestbook</a>
+        <a th:href="@{/profile}">Profile</a>
+    </nav>
 
-        <article class="window-card">
-            <div class="window-title">things i'm building</div>
-            <h2>Projects</h2>
-            <p>software, experiments, unfinished ideas, web tools, etc</p>
-            <a th:href="@{/projects}">Open projects →</a>
-        </article>
-
-        <article class="window-card">
-            <div class="window-title">leave something</div>
-            <h2>Guestbook</h2>
-            <p>place for visitors to leave messages if u wanna</p>
-            <a th:href="@{/guestbook}">Open guestbook →</a>
-        </article>
-
-        <article class="window-card">
-            <div class="window-title">profile</div>
-            <h2>About</h2>
-            <p>Who I am, what I like, what I make</p>
-            <a th:href="@{/profile}">Open profile →</a>
-        </article>
-    </div>
-
-    <section class="status-panel">
+    <section class="status-panel poster-status">
         <div>
             <h2>site status</h2>
             <p>Running from <strong>theconstellation</strong>, deployed automatically from GitHub.</p>
-            <p>last update: {date}</p>
+            <p>last update: <span th:text="${lastUpdateDistance}">just now</span></p>
         </div>
         <a class="button" th:href="@{/health}">Check health</a>
     </section>
-
 </section>
 </body>
 
