@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Guestbook</title>
+</head>
+
+<body>
+<section class="guestbook-page">
+    <div class="guestbook-hero">
+        <p class="guestbook-kicker">public wall</p>
+        <h1>guestbook</h1>
+        <p>sign the page, leave a trace, say something weird or sweet or both.</p>
+    </div>
+
+    <form class="guestbook-form" th:action="@{/guestbook}" th:object="${guestbookEntry}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div th:if="${guestbookSaved}" class="guestbook-flash">
+            message stamped on the wall.
+        </div>
+
+        <div class="field-group">
+            <label for="name">name</label>
+            <input id="name" th:field="*{name}" maxlength="48" required>
+            <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</p>
+        </div>
+
+        <div class="field-group">
+            <label for="message">message</label>
+            <textarea id="message" th:field="*{message}" rows="6" maxlength="800" required></textarea>
+            <p class="field-error" th:if="${#fields.hasErrors('message')}" th:errors="*{message}">Message error</p>
+        </div>
+
+        <button type="submit">sign it</button>
+    </form>
+
+    <div class="guestbook-wall" th:if="${entries != null and !#lists.isEmpty(entries)}">
+        <article class="guestbook-entry" th:each="entry, iter : ${entries}">
+            <div class="guestbook-entry-meta">
+                <span class="guestbook-entry-number" th:text="${'#' + (iter.size - iter.index)}">#1</span>
+                <strong th:text="${entry.name}">visitor</strong>
+                <time th:datetime="${entry.createdAt}" th:text="${#temporals.format(entry.createdAt, 'dd/MM/yyyy HH:mm')}">
+                    date
+                </time>
+            </div>
+
+            <p th:text="${entry.message}">message</p>
+
+            <form th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                  th:action="@{'/guestbook/delete/' + ${entry.id}}"
+                  method="post"
+                  class="guestbook-delete">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" onclick="return confirm('Apagar essa assinatura?')">delete</button>
+            </form>
+        </article>
+    </div>
+
+    <div class="guestbook-empty" th:if="${entries == null or #lists.isEmpty(entries)}">
+        <p>nobody signed yet. blank wall moment.</p>
+    </div>
+</section>
+</body>
+</html>

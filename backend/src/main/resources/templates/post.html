@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${post.title} + ' - Blog'">Post - Blog</title>
+</head>
+
+<body>
+<section class="post-page">
+    <a class="button" th:href="@{/blog}">back to blog</a>
+
+    <article class="post-full">
+        <time th:datetime="${post.createdAt}" th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}">Data</time>
+        <h1 th:text="${post.title}">Titulo</h1>
+
+        <div class="post-content" th:if="${post.contentHtml != null and !#strings.isEmpty(post.contentHtml)}"
+             th:utext="${post.contentHtml}">
+            Conteudo
+        </div>
+
+        <pre class="post-content post-content-raw"
+             th:if="${post.contentHtml == null or #strings.isEmpty(post.contentHtml)}"
+             th:text="${post.content}">
+            Conteudo
+        </pre>
+    </article>
+</section>
+</body>
+</html>
