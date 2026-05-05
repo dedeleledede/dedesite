@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table (name = "post")
@@ -18,7 +17,6 @@ public class Post {
     @Column(length = 255, nullable = false)
     private String title;
     
-    @Lob
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content_md;
     
