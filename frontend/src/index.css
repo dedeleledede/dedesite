@@ -1,5 +1,13 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-display: 'Norwester';
+  --font-body: var(--font-display);
+  --font-retro: 'W95FA';
+  --font-minor: var(--font-retro);
+  --font-ui: var(--font-minor);
+  --font-code: var(--font-minor);
+  --font-main: var(--font-body);
+
+  font-family: var(--font-main);
   line-height: 1.5;
   font-weight: 400;
 
@@ -11,6 +19,22 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@font-face {
+  font-family: 'Norwester';
+  src: url('/fonts/norwester.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'W95FA';
+  src: url('/fonts/w95fa.woff2') format('woff2'),
+       url('/fonts/w95fa.woff') format('woff'),
+       url('/fonts/w95fa.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 a {
@@ -41,10 +65,18 @@ button {
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
+  font-family: var(--font-ui);
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+}
+
+small,
+label,
+input,
+textarea,
+select {
+  font-family: var(--font-minor);
 }
 button:hover {
   border-color: #646cff;

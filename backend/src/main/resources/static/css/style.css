@@ -1,8 +1,15 @@
 @font-face {
-    font-family: 'w95fa';
+    font-family: 'W95FA';
     src: url('/fonts/w95fa.woff2') format('woff2'),
-    url('/fonts/w95fa.woff') format('woff'),
-    url('/fonts/w95fa.otf') format('opentype');
+         url('/fonts/w95fa.woff') format('woff'),
+         url('/fonts/w95fa.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Norwester';
+    src: url('/fonts/norwester.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -18,7 +25,14 @@
     --gray: #6f6a60;
     --border: #111111;
 
-    --font-main: 'w95fa', monospace;
+    --font-display: 'Norwester';
+    --font-body: var(--font-display);
+    --font-retro: 'W95FA';
+    --font-minor: var(--font-retro);
+    --font-ui: var(--font-minor);
+    --font-editor: var(--font-body);
+    --font-code: var(--font-minor);
+    --font-main: var(--font-body);
     --max-width: 1120px;
 }
 
@@ -34,7 +48,7 @@ body {
     margin: 0;
     min-height: 100vh;
     color: var(--ink);
-    font-family: var(--font-main), sans-serif;
+    font-family: var(--font-body);
     background:
             radial-gradient(circle at 10% 20%, rgba(179, 19, 18, 0.10) 0 2px, transparent 3px),
             radial-gradient(circle at 80% 10%, rgba(0, 0, 0, 0.08) 0 1px, transparent 2px),
@@ -127,6 +141,7 @@ footer {
     border-top: 3px dashed var(--ink);
     padding-top: 1rem;
     color: var(--gray);
+    font-family: var(--font-minor);
     font-size: 0.9rem;
     text-transform: uppercase;
 }
@@ -140,6 +155,18 @@ h3 {
     letter-spacing: -0.05em;
 }
 
+small,
+label,
+figcaption,
+.hero-kicker,
+.guestbook-kicker,
+.strip-label,
+.guestbook-entry-meta,
+.post-meta,
+.editor-note {
+    font-family: var(--font-minor);
+}
+
 p {
     max-width: 760px;
 }
@@ -151,7 +178,7 @@ button,
     padding: 0.65rem 0.9rem;
     background: var(--paper-dirty);
     color: var(--ink);
-    font-family: var(--font-main), sans-serif;
+    font-family: var(--font-ui);
     text-decoration: none;
     text-transform: uppercase;
     box-shadow: 4px 4px 0 var(--ink);
@@ -392,7 +419,7 @@ select {
     background: #fff8e8;
     color: var(--ink);
     padding: 0.6rem;
-    font-family: var(--font-main), sans-serif;
+    font-family: var(--font-ui);
     box-shadow: 3px 3px 0 var(--ink);
 }
 
@@ -450,7 +477,7 @@ select:focus {
 }
 
 .toastui-editor-defaultUI {
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
     color: #222;
 }
 
@@ -458,7 +485,7 @@ select:focus {
 .toastui-editor-defaultUI .toastui-editor-toolbar button,
 .toastui-editor-defaultUI .toastui-editor-popup button {
     all: revert;
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
     cursor: pointer;
 }
 
@@ -473,7 +500,7 @@ select:focus {
 .toastui-editor-defaultUI textarea,
 .toastui-editor-defaultUI select {
     all: revert;
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
 }
 
 .toastui-editor-dropdown-toolbar {
@@ -485,7 +512,7 @@ select:focus {
 }
 
 .toastui-editor-contents {
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
 }
 
 .post-content {
@@ -840,7 +867,7 @@ button:hover,
     right: -0.25rem;
     bottom: -0.42em;
     color: rgba(255, 255, 255, 0.12);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(5rem, 18vw, 14rem);
     line-height: 0.8;
     text-transform: uppercase;
@@ -864,7 +891,7 @@ button:hover,
     max-width: 820px;
     margin: 0;
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(3rem, 10vw, 8.8rem);
     line-height: 0.82;
     text-transform: uppercase;
@@ -876,6 +903,7 @@ button:hover,
     max-width: 650px;
     margin: 1rem 0 0;
     color: var(--paper);
+    font-family: var(--font-minor);
     font-size: 1rem;
     text-transform: uppercase;
 }
@@ -903,7 +931,7 @@ button:hover,
 .poster-readout strong {
     display: block;
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: 1.55rem;
     line-height: 0.95;
     text-transform: uppercase;
@@ -949,7 +977,7 @@ button:hover,
     border-right: 2px solid var(--paper);
     padding: 0.75rem;
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1.4rem, 4vw, 3rem);
     line-height: 0.85;
     text-decoration: none;
@@ -972,13 +1000,14 @@ button:hover,
 
 .poster-status h2 {
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1.8rem, 5vw, 4rem);
 }
 
 .poster-status p,
 .status-panel p {
     color: var(--paper);
+    font-family: var(--font-minor);
 }
 
 .window-card,
@@ -1113,7 +1142,7 @@ main > section:not(.poster-home) > h1,
 .health-card h1 {
     margin: 0 0 1rem;
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(2.8rem, 9vw, 7rem);
     line-height: 0.82;
     text-transform: uppercase;
@@ -1188,7 +1217,7 @@ select:focus {
 
 .guestbook-hero::after {
     color: rgba(242, 242, 235, 0.12);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     transform: none;
 }
 
@@ -1271,8 +1300,38 @@ button,
 .button,
 a.button,
 nav a,
-.poster-directory a {
-    font-family: var(--font-main), monospace;
+.poster-directory a,
+footer,
+small,
+label,
+figcaption,
+input,
+textarea,
+select,
+.hero-kicker,
+.guestbook-kicker,
+.strip-label,
+.poster-code,
+.poster-readout span,
+.guestbook-entry-meta,
+.guestbook-entry-number,
+.guestbook-readout-excerpt,
+.field-error,
+.guestbook-flash,
+.health-status,
+.post-meta,
+.editor-note,
+.latest-guestbook-strip footer,
+.latest-post-strip footer,
+.toastui-editor-defaultUI,
+.toastui-editor-defaultUI *,
+.markdown-editor-page .toastui-editor-defaultUI,
+.markdown-editor-page .toastui-editor-defaultUI *,
+.markdown-toolbar button,
+.preview-header button,
+.wysiwyg-toolbar button,
+.error-details dd {
+    font-family: var(--font-code);
 }
 
 /* HOME EXCERPT CLAMPS */
@@ -1319,7 +1378,7 @@ nav a,
 .latest-post-strip h2 {
     margin: 0 0 0.45rem;
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1.5rem, 4vw, 3.2rem);
     line-height: 0.9;
     text-transform: uppercase;
@@ -1452,6 +1511,21 @@ article,
     color: var(--paper);
 }
 
+.poster-frame .hero-text,
+.poster-status p,
+.poster-status p *,
+.status-panel p,
+.status-panel p *,
+.poster-readout span,
+.latest-guestbook-strip p,
+.latest-guestbook-strip footer,
+.latest-guestbook-strip footer *,
+.latest-post-strip p,
+.latest-post-strip footer,
+.latest-post-strip footer * {
+    font-family: var(--font-minor);
+}
+
 @media (max-width: 560px) {
     .poster-frame h1 {
         font-size: clamp(2rem, 14vw, 3.9rem);
@@ -1485,7 +1559,7 @@ article,
 .markdown-editor-page .toastui-editor-defaultUI * {
     box-sizing: border-box;
     color: initial;
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
     text-transform: none;
 }
 
@@ -1500,7 +1574,7 @@ article,
     all: revert;
     box-sizing: border-box;
     cursor: pointer;
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
     max-width: none;
     text-align: initial;
     white-space: normal;
@@ -1512,7 +1586,7 @@ article,
     all: revert;
     box-sizing: border-box;
     cursor: pointer;
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
 }
 
 .markdown-editor-page .toastui-editor-defaultUI input,
@@ -1520,7 +1594,7 @@ article,
 .markdown-editor-page .toastui-editor-defaultUI select {
     all: revert;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
 }
 
 .markdown-editor-page .toastui-editor-defaultUI .toastui-editor-toolbar-icons {
@@ -1560,7 +1634,7 @@ article,
     padding: 0.45rem 0.55rem;
     background: transparent;
     color: var(--paper);
-    font-family: var(--font-main), monospace;
+    font-family: var(--font-code);
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
@@ -1580,7 +1654,7 @@ article,
     border: 2px solid var(--paper);
     background: #f2f2eb;
     color: #080808;
-    font-family: ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace;
+    font-family: var(--font-code);
     font-size: 1rem;
     line-height: 1.55;
     caret-color: var(--blood);
@@ -1652,7 +1726,7 @@ article,
     padding: 0.35rem 0.5rem;
     background: transparent;
     color: var(--paper);
-    font-family: var(--font-main), monospace;
+    font-family: var(--font-code);
 }
 
 .preview-header button:hover,
@@ -1675,7 +1749,7 @@ article,
 .markdown-preview h2,
 .markdown-preview h3 {
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     line-height: 0.92;
     text-transform: uppercase;
 }
@@ -1756,7 +1830,7 @@ article,
 .blog-card h2 {
     margin: 0 0 0.5rem;
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1.8rem, 5vw, 4rem);
     line-height: 0.9;
     text-transform: uppercase;
@@ -1790,7 +1864,7 @@ article,
 .post-full h1 {
     margin: 0 0 1rem;
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(2.4rem, 8vw, 6rem);
     line-height: 0.9;
     text-transform: uppercase;
@@ -1807,7 +1881,7 @@ article,
 .post-content h5,
 .post-content h6 {
     color: var(--paper);
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     line-height: 0.95;
     text-transform: uppercase;
 }
@@ -1842,7 +1916,7 @@ article,
     padding: 0.45rem 0.55rem;
     background: transparent;
     color: var(--paper);
-    font-family: var(--font-main), monospace;
+    font-family: var(--font-code);
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
@@ -1864,7 +1938,7 @@ article,
     background: #f2f2eb;
     color: #080808;
     padding: 1rem;
-    font-family: Arial, sans-serif;
+    font-family: var(--font-ui);
     font-size: 1rem;
     line-height: 1.55;
     caret-color: var(--blood);
@@ -1885,7 +1959,7 @@ article,
 .wysiwyg-surface h2,
 .wysiwyg-surface h3 {
     color: #080808;
-    font-family: Arial Black, Impact, sans-serif;
+    font-family: var(--font-display);
     line-height: 0.95;
     text-transform: uppercase;
 }
@@ -1936,7 +2010,7 @@ article,
     margin: 0;
     color: var(--paper);
     overflow-wrap: anywhere;
-    font-family: ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace;
+    font-family: var(--font-code);
 }
 
 @media (max-width: 560px) {
@@ -1944,4 +2018,3 @@ article,
         grid-template-columns: 1fr;
     }
 }
-
