@@ -27,8 +27,15 @@ public class PostService {
         return postRepository.findFirstByOrderByCreatedAtDesc();
     }
 
+    public Optional<Post> getPostById(Long id) {
+        return postRepository.findById(id);
+    }
+
     public void savePost(Post post) {
-        String safeHtml = markdownService.toSafeHtml(post.getContent());
+        String safeHtml = markdownService.sanitizeHtml(post.getContent());
+        String plainText = markdownService.toPlainText(safeHtml);
+
+        post.setContent(plainText.isBlank() ? " " : plainText);
         post.setContentHtml(safeHtml);
         postRepository.save(post);
     }

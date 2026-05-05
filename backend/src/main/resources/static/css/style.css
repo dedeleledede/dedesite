@@ -34,7 +34,7 @@ body {
     margin: 0;
     min-height: 100vh;
     color: var(--ink);
-    font-family: var(--font-main);
+    font-family: var(--font-main), sans-serif;
     background:
             radial-gradient(circle at 10% 20%, rgba(179, 19, 18, 0.10) 0 2px, transparent 3px),
             radial-gradient(circle at 80% 10%, rgba(0, 0, 0, 0.08) 0 1px, transparent 2px),
@@ -1462,5 +1462,443 @@ article,
     .health-card h1 {
         font-size: clamp(2rem, 13vw, 4rem);
     }
+}
+
+/* TOAST UI EDITOR FINAL OVERRIDE */
+
+.markdown-editor-page {
+    color: var(--paper);
+}
+
+.editor-note {
+    color: var(--paper);
+    text-transform: uppercase;
+}
+
+.markdown-editor {
+    margin-top: 12px;
+    border: 2px solid var(--paper);
+    background: #fff;
+}
+
+.markdown-editor-page .toastui-editor-defaultUI,
+.markdown-editor-page .toastui-editor-defaultUI * {
+    box-sizing: border-box;
+    color: initial;
+    font-family: Arial, sans-serif;
+    text-transform: none;
+}
+
+.markdown-editor-page .toastui-editor-defaultUI {
+    border: 0;
+    background: #fff;
+}
+
+.markdown-editor-page .toastui-editor-defaultUI button,
+.markdown-editor-page .toastui-editor-defaultUI .toastui-editor-toolbar button,
+.markdown-editor-page .toastui-editor-defaultUI .toastui-editor-popup button {
+    all: revert;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    max-width: none;
+    text-align: initial;
+    white-space: normal;
+}
+
+.markdown-editor-page .toastui-editor-defaultUI button:hover,
+.markdown-editor-page .toastui-editor-defaultUI .toastui-editor-toolbar button:hover,
+.markdown-editor-page .toastui-editor-defaultUI .toastui-editor-popup button:hover {
+    all: revert;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+}
+
+.markdown-editor-page .toastui-editor-defaultUI input,
+.markdown-editor-page .toastui-editor-defaultUI textarea,
+.markdown-editor-page .toastui-editor-defaultUI select {
+    all: revert;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.markdown-editor-page .toastui-editor-defaultUI .toastui-editor-toolbar-icons {
+    background-color: transparent;
+}
+
+.markdown-editor-page .toastui-editor-md-container,
+.markdown-editor-page .toastui-editor-md-container *,
+.markdown-editor-page .toastui-editor-contents,
+.markdown-editor-page .toastui-editor-contents * {
+    color: #222;
+}
+
+.markdown-editor-page .toastui-editor-mode-switch {
+    display: none;
+}
+
+/* SIMPLE MARKDOWN EDITOR */
+
+.markdown-editor-page form {
+    display: grid;
+    gap: 1rem;
+}
+
+.markdown-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    border: 2px solid var(--paper);
+    background: rgba(8, 8, 8, 0.9);
+    padding: 0.5rem;
+}
+
+.markdown-toolbar button {
+    min-width: 4.2rem;
+    border: 1px solid var(--paper);
+    padding: 0.45rem 0.55rem;
+    background: transparent;
+    color: var(--paper);
+    font-family: var(--font-main), monospace;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.markdown-toolbar button:hover,
+.markdown-toolbar button:focus {
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+}
+
+.markdown-textarea {
+    width: 100%;
+    min-height: 560px;
+    resize: vertical;
+    border: 2px solid var(--paper);
+    background: #f2f2eb;
+    color: #080808;
+    font-family: ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace;
+    font-size: 1rem;
+    line-height: 1.55;
+    caret-color: var(--blood);
+    box-shadow: none;
+}
+
+.markdown-textarea:focus {
+    background: #fff;
+    color: #080808;
+    box-shadow: 0 0 0 2px var(--blood);
+}
+
+.editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.post-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.post-content th,
+.post-content td {
+    border: 1px solid var(--paper);
+    padding: 0.45rem;
+}
+
+.post-content blockquote {
+    margin-left: 0;
+    border-left: 3px solid var(--blood);
+    padding-left: 1rem;
+}
+
+/* MARKDOWN LIVE PREVIEW */
+
+.editor-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.editor-pane,
+.preview-pane {
+    min-width: 0;
+}
+
+.preview-pane {
+    border: 2px solid var(--paper);
+    background: rgba(8, 8, 8, 0.9);
+}
+
+.preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-bottom: 2px solid var(--paper);
+    padding: 0.5rem;
+    color: var(--paper);
+    text-transform: uppercase;
+}
+
+.preview-header button {
+    border: 1px solid var(--paper);
+    padding: 0.35rem 0.5rem;
+    background: transparent;
+    color: var(--paper);
+    font-family: var(--font-main), monospace;
+}
+
+.preview-header button:hover,
+.preview-header button:focus {
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+}
+
+.markdown-preview {
+    min-height: 560px;
+    max-height: 680px;
+    margin: 0;
+    overflow: auto;
+    border: 0;
+    background: rgba(8, 8, 8, 0.96);
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3 {
+    color: var(--paper);
+    font-family: Arial Black, Impact, sans-serif;
+    line-height: 0.92;
+    text-transform: uppercase;
+}
+
+.markdown-preview img {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid var(--paper);
+}
+
+.editor-workspace.preview-expanded {
+    grid-template-columns: 1fr;
+}
+
+.editor-workspace.preview-expanded .editor-pane {
+    display: none;
+}
+
+.editor-workspace.preview-expanded .markdown-preview {
+    min-height: 75vh;
+    max-height: none;
+}
+
+@media (max-width: 950px) {
+    .editor-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .markdown-preview {
+        min-height: 360px;
+    }
+}
+
+/* BLOG WALL AND POST PAGES */
+
+.blog-admin-actions,
+.blog-pagination,
+.blog-post-list {
+    margin-top: 1rem;
+}
+
+.blog-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.blog-post-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.blog-card {
+    position: relative;
+    padding: 0;
+}
+
+.blog-card-link {
+    display: block;
+    padding: 1rem;
+    color: var(--paper);
+    text-decoration: none;
+}
+
+.blog-card-link:hover {
+    background: rgba(178, 15, 18, 0.28);
+    color: var(--paper);
+}
+
+.blog-card time,
+.post-full time {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--gray);
+    text-transform: uppercase;
+}
+
+.blog-card h2 {
+    margin: 0 0 0.5rem;
+    color: var(--paper);
+    font-family: Arial Black, Impact, sans-serif;
+    font-size: clamp(1.8rem, 5vw, 4rem);
+    line-height: 0.9;
+    text-transform: uppercase;
+}
+
+.blog-card p {
+    display: -webkit-box;
+    max-width: none;
+    margin: 0 0 0.75rem;
+    overflow: hidden;
+    color: var(--paper);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.blog-card span {
+    color: var(--paper);
+    text-decoration: underline;
+    text-transform: uppercase;
+}
+
+.blog-delete-form {
+    padding: 0 1rem 1rem;
+}
+
+.post-page {
+    display: grid;
+    gap: 1rem;
+}
+
+.post-full h1 {
+    margin: 0 0 1rem;
+    color: var(--paper);
+    font-family: Arial Black, Impact, sans-serif;
+    font-size: clamp(2.4rem, 8vw, 6rem);
+    line-height: 0.9;
+    text-transform: uppercase;
+}
+
+.post-full .post-content {
+    max-width: none;
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+    color: var(--paper);
+    font-family: Arial Black, Impact, sans-serif;
+    line-height: 0.95;
+    text-transform: uppercase;
+}
+
+.post-content p,
+.post-content li,
+.post-content blockquote,
+.post-content td,
+.post-content th {
+    color: var(--paper);
+}
+
+/* LOCAL WYSIWYG EDITOR */
+
+.wysiwyg-editor-page form {
+    display: grid;
+    gap: 1rem;
+}
+
+.wysiwyg-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    border: 2px solid var(--paper);
+    background: rgba(8, 8, 8, 0.9);
+    padding: 0.5rem;
+}
+
+.wysiwyg-toolbar button {
+    min-width: 4rem;
+    border: 1px solid var(--paper);
+    padding: 0.45rem 0.55rem;
+    background: transparent;
+    color: var(--paper);
+    font-family: var(--font-main), monospace;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    box-shadow: none;
+    transform: none;
+}
+
+.wysiwyg-toolbar button:hover,
+.wysiwyg-toolbar button:focus {
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+}
+
+.wysiwyg-surface {
+    min-height: 680px;
+    overflow: auto;
+    border: 2px solid var(--paper);
+    background: #f2f2eb;
+    color: #080808;
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.55;
+    caret-color: var(--blood);
+}
+
+.wysiwyg-surface:focus {
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--blood);
+}
+
+.wysiwyg-surface:empty::before {
+    content: "start writing...";
+    color: #666;
+}
+
+.wysiwyg-surface h1,
+.wysiwyg-surface h2,
+.wysiwyg-surface h3 {
+    color: #080808;
+    font-family: Arial Black, Impact, sans-serif;
+    line-height: 0.95;
+    text-transform: uppercase;
+}
+
+.wysiwyg-surface blockquote {
+    margin-left: 0;
+    border-left: 4px solid var(--blood);
+    padding-left: 1rem;
+}
+
+.wysiwyg-surface img {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid #080808;
 }
 

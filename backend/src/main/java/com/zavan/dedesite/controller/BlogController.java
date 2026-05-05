@@ -1,20 +1,25 @@
 package com.zavan.dedesite.controller;
 
+import com.zavan.dedesite.dto.PostDTO;
 import com.zavan.dedesite.model.Post;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.service.PostService;
 import com.zavan.dedesite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import com.zavan.dedesite.dto.PostDTO;
-
-import java.util.List;
-import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/blog")
@@ -28,7 +33,7 @@ public class BlogController {
 
     @GetMapping
     public String showBlog(@RequestParam(defaultValue = "0") int page, Model model) {
-        int size = 5; // 5 posts por página
+        int size = 5;
         Page<Post> postPage = postService.getPostsPaginated(page, size);
 
         model.addAttribute("posts", postPage.getContent());
@@ -37,7 +42,14 @@ public class BlogController {
         return "blog";
     }
 
-    // Apenas usuários ADMIN podem acessar o formulário
+    @GetMapping("/{id}")
+    public String showPost(@PathVariable Long id, Model model) {
+        Post post = postService.getPostById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        model.addAttribute("post", post);
+        return "post";
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/new")
     public String showNewPostForm(Model model) {
@@ -48,7 +60,7 @@ public class BlogController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String savePost(@ModelAttribute PostDTO postDto,
-            @AuthenticationPrincipal UserDetails userDetails) {
+                           @AuthenticationPrincipal UserDetails userDetails) {
         User user = userService.findByUsername(userDetails.getUsername());
         Post post = new Post();
         post.setTitle(postDto.getTitle());
@@ -57,7 +69,7 @@ public class BlogController {
         postService.savePost(post);
         return "redirect:/blog";
     }
-    
+
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deletePost(@PathVariable Long id) {

@@ -1,83 +1,126 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
-
 <head>
     <title>Blog Nova Postagem</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 
 <body>
-<section>
-    
+<section class="wysiwyg-editor-page">
     <h1>Nova Postagem</h1>
 
     <form id="postForm" th:action="@{/blog}" th:object="${postDto}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <div>
-            <label for="title">Título:</label><br>
-            <input id="title" th:field="*{title}" style="width:100%;max-width:800px" maxlength="255" required>
+
+        <div class="field-group">
+            <label for="title">Titulo</label>
+            <input id="title" th:field="*{title}" maxlength="255" required>
         </div>
 
-        <!-- campo oculto que recebera o markdown -->
-        <input type="hidden" id="content" th:field="*{content}">
+        <div class="wysiwyg-toolbar" aria-label="Editor tools">
+            <button type="button" data-command="formatBlock" data-value="h1">H1</button>
+            <button type="button" data-command="formatBlock" data-value="h2">H2</button>
+            <button type="button" data-command="formatBlock" data-value="p">P</button>
+            <button type="button" data-command="bold">Bold</button>
+            <button type="button" data-command="italic">Italic</button>
+            <button type="button" data-command="underline">Underline</button>
+            <button type="button" data-command="strikeThrough">Strike</button>
+            <button type="button" data-command="insertUnorderedList">List</button>
+            <button type="button" data-command="insertOrderedList">Numbers</button>
+            <button type="button" id="quoteButton">Quote</button>
+            <button type="button" id="linkButton">Link</button>
+            <button type="button" id="imageButton">Image</button>
+            <button type="button" id="clearButton">Clear</button>
+        </div>
 
-        <!-- editor -->
-        <div id="editor" style="margin-top:12px;border:1px solid #ddd;border-radius:8px;"></div>
+        <input id="imageUpload" type="file" accept="image/*" hidden>
+        <textarea id="content" th:field="*{content}" hidden></textarea>
 
-        <div style="margin-top:1.5rem;">
+        <div class="field-group">
+            <label for="editorSurface">Post body</label>
+            <div id="editorSurface" class="wysiwyg-surface" contenteditable="true" role="textbox" aria-multiline="true"></div>
+        </div>
+
+        <div class="editor-actions">
             <button type="submit">publicar</button>
-            <a th:href="@{/blog}" style="margin-left:10px;">Voltar para o blog</a>
+            <a class="button" th:href="@{/blog}">voltar</a>
         </div>
     </form>
 
-<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <script>
-    const token  = document.querySelector('meta[name="_csrf"]')?.content;
+    const token = document.querySelector('meta[name="_csrf"]')?.content;
     const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+    const form = document.getElementById('postForm');
+    const hiddenContent = document.getElementById('content');
+    const editor = document.getElementById('editorSurface');
+    const imageUpload = document.getElementById('imageUpload');
 
-    const editor = new toastui.Editor({
-        el: document.querySelector('#editor'),
-        height: '600px',
-        initialEditType: 'markdown',   // pode trocar para 'markdown'
-        previewStyle: 'vertical',
-        toolbarItems: [
-            ['heading','bold','italic','strike'],
-            ['hr','quote'],
-            ['ul','ol','task','indent','outdent'],
-            ['table','link'],
-            ['image','code','codeblock']
-        ],
-        hooks: {
-            addImageBlobHook: async (blob, callback) => {
-              try {
-                    const fd = new FormData();
-                    fd.append('file', blob);
-                    const res = await fetch('/api/uploads/image', {
-                        method: 'POST',
-                        headers: header && token ? { [header]: token } : {},
-                        body: fd
-                    });
-                    if (!res.ok) throw new Error('Falha no upload');
-                    const data = await res.json(); // {url:"/uploads/blog/xxx.ext"}
-                    callback(data.url, blob.name);
-                  } catch (e) {
-                    alert('Erro ao enviar imagem');
-                    console.error(e);
-                  }
-            }
+    editor.innerHTML = hiddenContent.value || '<p></p>';
+
+    function focusEditor() {
+        editor.focus();
+    }
+
+    function runCommand(command, value = null) {
+        focusEditor();
+        document.execCommand(command, false, value);
+    }
+
+    document.querySelectorAll('.wysiwyg-toolbar button[data-command]').forEach((button) => {
+        button.addEventListener('click', () => {
+            runCommand(button.dataset.command, button.dataset.value || null);
+        });
+    });
+
+    document.getElementById('quoteButton').addEventListener('click', () => {
+        runCommand('formatBlock', 'blockquote');
+    });
+
+    document.getElementById('linkButton').addEventListener('click', () => {
+        const url = prompt('Link URL');
+        if (url) {
+            runCommand('createLink', url);
         }
     });
 
-    const postForm = document.getElementById('postForm');
-
-    postForm.addEventListener('submit', function () {
-        const markdown = editor.getMarkdown();
-        document.getElementById('content').value = markdown;
+    document.getElementById('imageButton').addEventListener('click', () => {
+        imageUpload.click();
     });
 
+    document.getElementById('clearButton').addEventListener('click', () => {
+        runCommand('removeFormat');
+    });
+
+    imageUpload.addEventListener('change', async () => {
+        const file = imageUpload.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/uploads/image', {
+                method: 'POST',
+                headers: header && token ? { [header]: token } : {},
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('upload failed');
+
+            const data = await response.json();
+            runCommand('insertImage', data.url);
+        } catch (error) {
+            alert('Erro ao enviar imagem');
+            console.error(error);
+        } finally {
+            imageUpload.value = '';
+        }
+    });
+
+    form.addEventListener('submit', () => {
+        hiddenContent.value = editor.innerHTML.trim();
+    });
 </script>
 
 </section>
