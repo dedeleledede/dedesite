@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Projects - Esther</title>
+</head>
+
+<body>
+<section class="projects-page">
+    <div class="projects-hero">
+        <p class="projects-kicker">current projects</p>
+        <h1>projects</h1>
+        <p>
+            dedesite is live. suture &amp; sorcery and star_byte are active work-in-progress repos.
+        </p>
+    </div>
+
+    <div class="project-board" aria-label="Project list">
+        <article class="project-card">
+            <div class="project-card-topline">
+                <span>live</span>
+                <span>web</span>
+            </div>
+            <h2>dedesite</h2>
+            <p>
+                This website: blog, guestbook, visual systems, personal pages, and whatever gets wired in next.
+            </p>
+            <div class="project-tags" aria-label="Project tags">
+                <span>spring boot</span>
+                <span>thymeleaf</span>
+                <span>live site</span>
+            </div>
+            <a class="button primary" href="https://github.com/dedeleledede/dedesite" rel="noopener noreferrer" target="_blank">source</a>
+        </article>
+
+        <article class="project-card">
+            <div class="project-card-topline">
+                <span>in progress</span>
+                <span>minecraft mod</span>
+            </div>
+            <h2>suture &amp; sorcery</h2>
+            <p>
+                A minecraft magic mod about stitching power together, spellwork, and strange systems.
+            </p>
+            <div class="project-tags" aria-label="Project tags">
+                <span>minecraft</span>
+                <span>magic mod</span>
+                <span>git repo</span>
+            </div>
+            <a class="button primary" href="https://github.com/dedeleledede/suture_n_sorcery" rel="noopener noreferrer" target="_blank">source</a>
+        </article>
+
+        <article class="project-card">
+            <div class="project-card-topline">
+                <span>in progress</span>
+                <span>software</span>
+            </div>
+            <h2>star_byte</h2>
+            <p>
+                A current software project with its own identity, experiments, and development notes.
+            </p>
+            <div class="project-tags" aria-label="Project tags">
+                <span>software</span>
+                <span>active</span>
+                <span>git repo</span>
+            </div>
+            <a class="button primary" href="https://github.com/dedeleledede/star_byte" rel="noopener noreferrer" target="_blank">source</a>
+        </article>
+    </div>
+</section>
+</body>
+</html>

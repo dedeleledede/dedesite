@@ -9,9 +9,7 @@ public class StaticPageController {
 
     @GetMapping("/projects")
     public String projects(Model model) {
-        model.addAttribute("pageTitle", "projects");
-        model.addAttribute("pageText", "software, experiments, unfinished ideas, and tools will live here.");
-        return "placeholder";
+        return "projects";
     }
 
     @GetMapping("/music")
