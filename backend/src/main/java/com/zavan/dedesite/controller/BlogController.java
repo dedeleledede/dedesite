@@ -3,8 +3,11 @@ package com.zavan.dedesite.controller;
 import com.zavan.dedesite.dto.PostDTO;
 import com.zavan.dedesite.model.Post;
 import com.zavan.dedesite.model.User;
+import com.zavan.dedesite.service.ImageUploadService;
 import com.zavan.dedesite.service.PostService;
 import com.zavan.dedesite.service.UserService;
+import java.io.IOException;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
@@ -30,6 +35,9 @@ public class BlogController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ImageUploadService imageUploadService;
 
     @GetMapping
     public String showBlog(@RequestParam(defaultValue = "0") int page, Model model) {
@@ -75,5 +83,19 @@ public class BlogController {
     public String deletePost(@PathVariable Long id) {
         postService.deletePostById(id);
         return "redirect:/blog";
+    }
+
+    @PostMapping("/uploads/image")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public Map<String, String> uploadPostImage(@RequestParam("file") MultipartFile file) throws IOException {
+        return imageUploadService.uploadBlogImage(file);
+    }
+
+    @PostMapping("/uploads/image-data")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public Map<String, String> uploadPostImageData(@org.springframework.web.bind.annotation.RequestBody Map<String, String> payload) throws IOException {
+        return imageUploadService.uploadBlogImageData(payload.get("dataUrl"), payload.get("filename"));
     }
 }

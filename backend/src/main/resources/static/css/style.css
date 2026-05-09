@@ -410,6 +410,13 @@ button:hover,
     color: var(--ink);
 }
 
+.health-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
 /* FORMS */
 
 input,
@@ -1950,9 +1957,7 @@ article,
     display: grid;
     align-content: space-between;
     min-height: 170px;
-    background:
-            linear-gradient(135deg, rgba(215, 255, 63, 0.16), transparent 42%),
-            rgba(179, 19, 18, 0.18);
+    background: rgba(8, 8, 8, 0.72);
 }
 
 .poster-readout {
@@ -2099,6 +2104,64 @@ article,
     background: var(--paper);
     color: var(--ink);
     outline: none;
+}
+
+.upload-error-panel {
+    display: grid;
+    gap: 0.75rem;
+    border: 2px solid var(--blood);
+    background: rgba(8, 8, 8, 0.94);
+    padding: 0.85rem;
+    color: var(--paper);
+}
+
+.upload-error-panel[hidden] {
+    display: none;
+}
+
+.upload-error-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.upload-error-header strong {
+    color: var(--paper);
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    line-height: 0.9;
+    text-transform: uppercase;
+}
+
+.upload-error-header button {
+    padding: 0.4rem 0.55rem;
+}
+
+.upload-error-details {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    font-family: var(--font-minor);
+}
+
+.upload-error-details div {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 0.75rem;
+    border-top: 1px solid var(--paper);
+    padding-top: 0.5rem;
+}
+
+.upload-error-details dt {
+    color: var(--gray);
+    text-transform: uppercase;
+}
+
+.upload-error-details dd {
+    margin: 0;
+    color: var(--paper);
+    overflow-wrap: anywhere;
 }
 
 .wysiwyg-surface {

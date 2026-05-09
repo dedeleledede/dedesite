@@ -37,6 +37,7 @@ build/
 # backend
 backend/src/main/java/com/zavan/dedesite/config/LocalAdminSeeder.java
 backend/target
+backend/uploads/
 backend/.env
 backend/*.env
 *.log

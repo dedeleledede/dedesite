@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<section class="wysiwyg-editor-page">
+<section class="wysiwyg-editor-page" id="postEditor">
     <h1>Nova Postagem</h1>
 
     <form id="postForm" th:action="@{/blog}" th:object="${postDto}" method="post">
@@ -37,6 +37,31 @@
         <input id="imageUpload" type="file" accept="image/*" hidden>
         <textarea id="content" th:field="*{content}" hidden></textarea>
 
+        <div id="uploadErrorPanel" class="upload-error-panel" role="alert" hidden>
+            <div class="upload-error-header">
+                <strong>image upload failed</strong>
+                <button type="button" id="closeUploadError">close</button>
+            </div>
+            <dl class="upload-error-details">
+                <div>
+                    <dt>status</dt>
+                    <dd id="uploadErrorStatus">unknown</dd>
+                </div>
+                <div>
+                    <dt>url</dt>
+                    <dd id="uploadErrorUrl">unknown</dd>
+                </div>
+                <div>
+                    <dt>message</dt>
+                    <dd id="uploadErrorMessage">unknown</dd>
+                </div>
+                <div>
+                    <dt>likely fix</dt>
+                    <dd id="uploadErrorHint">check the backend log for the upload endpoint.</dd>
+                </div>
+            </dl>
+        </div>
+
         <div class="field-group">
             <label for="editorSurface">Post body</label>
             <div id="editorSurface" class="wysiwyg-surface" contenteditable="true" role="textbox" aria-multiline="true"></div>
@@ -48,15 +73,30 @@
         </div>
     </form>
 
-<script>
+<script th:inline="javascript">
+    const uploadUrl = /*[[@{/blog/uploads/image}]]*/ '/blog/uploads/image';
+    const uploadDataUrl = /*[[@{/blog/uploads/image-data}]]*/ '/blog/uploads/image-data';
     const token = document.querySelector('meta[name="_csrf"]')?.content;
     const header = document.querySelector('meta[name="_csrf_header"]')?.content;
     const form = document.getElementById('postForm');
     const hiddenContent = document.getElementById('content');
     const editor = document.getElementById('editorSurface');
     const imageUpload = document.getElementById('imageUpload');
+    const uploadErrorPanel = document.getElementById('uploadErrorPanel');
+    const uploadErrorStatus = document.getElementById('uploadErrorStatus');
+    const uploadErrorUrl = document.getElementById('uploadErrorUrl');
+    const uploadErrorMessage = document.getElementById('uploadErrorMessage');
+    const uploadErrorHint = document.getElementById('uploadErrorHint');
+    let savedRange = null;
 
     editor.innerHTML = hiddenContent.value || '<p></p>';
+
+    function rememberSelection() {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0 && editor.contains(selection.anchorNode)) {
+            savedRange = selection.getRangeAt(0).cloneRange();
+        }
+    }
 
     function focusEditor() {
         editor.focus();
@@ -65,6 +105,135 @@
     function runCommand(command, value = null) {
         focusEditor();
         document.execCommand(command, false, value);
+        rememberSelection();
+    }
+
+    function hideUploadError() {
+        uploadErrorPanel.hidden = true;
+    }
+
+    function uploadHint(status, message) {
+        const lowerMessage = String(message || '').toLowerCase();
+
+        if (status === 401 || status === 403) {
+            return 'your session or admin role was rejected. reload, log in as admin again, then retry.';
+        }
+
+        if (status === 413 || lowerMessage.includes('size') || lowerMessage.includes('large')) {
+            return 'the file is too large for the configured multipart limit. this project now allows 15MB files after backend restart.';
+        }
+
+        if (status === 415) {
+            return 'the selected file was not accepted as an image. try png, jpg, gif, or webp.';
+        }
+
+        if (status >= 500) {
+            return 'the server failed while saving the file. check whether app.upload.dir exists and is writable.';
+        }
+
+        if (status === 404) {
+            return 'the upload route is still missing in the running backend. open /blog/uploads/check while logged in as admin; it should return JSON.';
+        }
+
+        return 'the editor will try the JSON fallback route next. if that also fails, check the backend log for the image upload route.';
+    }
+
+    async function uploadErrorFromResponse(response) {
+        const contentType = response.headers.get('content-type') || '';
+        let message = `${response.status} ${response.statusText}`.trim();
+
+        if (contentType.includes('application/json')) {
+            const body = await response.json();
+            message = body.message || body.error || JSON.stringify(body);
+        } else {
+            const body = await response.text();
+            if (body) message = body.slice(0, 700);
+        }
+
+        return {
+            status: response.status,
+            message
+        };
+    }
+
+    function showUploadError(error) {
+        const status = error.status || 'network';
+        const message = error.message || 'request failed before the server returned a response';
+
+        uploadErrorStatus.textContent = status;
+        uploadErrorUrl.textContent = error.url || uploadUrl;
+        uploadErrorMessage.textContent = message;
+        uploadErrorHint.textContent = uploadHint(Number(status), message);
+        uploadErrorPanel.hidden = false;
+    }
+
+    function insertUploadedImage(url, altText) {
+        const image = document.createElement('img');
+        image.src = url;
+        image.alt = altText || 'uploaded image';
+
+        const spacer = document.createElement('p');
+        spacer.appendChild(document.createElement('br'));
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(image);
+        fragment.appendChild(spacer);
+
+        const selection = window.getSelection();
+        editor.focus();
+
+        if (savedRange && editor.contains(savedRange.commonAncestorContainer)) {
+            selection.removeAllRanges();
+            selection.addRange(savedRange);
+            savedRange.deleteContents();
+            savedRange.insertNode(fragment);
+            savedRange.setStartAfter(spacer);
+            savedRange.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(savedRange);
+        } else {
+            editor.appendChild(image);
+            editor.appendChild(spacer);
+        }
+
+        hiddenContent.value = editor.innerHTML.trim();
+        rememberSelection();
+    }
+
+    function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error || new Error('file read failed'));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function uploadImageAsDataUrl(file) {
+        const dataUrl = await readFileAsDataUrl(file);
+        const response = await fetch(uploadDataUrl, {
+            method: 'POST',
+            headers: header && token
+                ? { [header]: token, 'Accept': 'application/json', 'Content-Type': 'application/json' }
+                : { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filename: file.name,
+                dataUrl
+            })
+        });
+
+        if (!response.ok) {
+            const uploadError = await uploadErrorFromResponse(response);
+            uploadError.url = uploadDataUrl;
+            throw uploadError;
+        }
+
+        return response.json();
+    }
+
+    async function insertInlineImageFallback(file) {
+        const dataUrl = await readFileAsDataUrl(file);
+        insertUploadedImage(dataUrl, file.name);
+        hideUploadError();
     }
 
     document.querySelectorAll('.wysiwyg-toolbar button[data-command]').forEach((button) => {
@@ -85,8 +254,14 @@
     });
 
     document.getElementById('imageButton').addEventListener('click', () => {
+        rememberSelection();
         imageUpload.click();
     });
+
+    editor.addEventListener('keyup', rememberSelection);
+    editor.addEventListener('mouseup', rememberSelection);
+    editor.addEventListener('focus', rememberSelection);
+    document.getElementById('closeUploadError').addEventListener('click', hideUploadError);
 
     document.getElementById('clearButton').addEventListener('click', () => {
         runCommand('removeFormat');
@@ -100,18 +275,29 @@
         formData.append('file', file);
 
         try {
-            const response = await fetch('/api/uploads/image', {
+            const response = await fetch(uploadUrl, {
                 method: 'POST',
-                headers: header && token ? { [header]: token } : {},
+                headers: header && token ? { [header]: token, 'Accept': 'application/json' } : { 'Accept': 'application/json' },
                 body: formData
             });
 
-            if (!response.ok) throw new Error('upload failed');
+            let data;
+            if (response.ok) {
+                data = await response.json();
+            } else {
+                try {
+                    data = await uploadImageAsDataUrl(file);
+                } catch (fallbackError) {
+                    await insertInlineImageFallback(file);
+                    return;
+                }
+            }
 
-            const data = await response.json();
-            runCommand('insertImage', data.url);
+            const imageUrl = new URL(data.url, window.location.origin).href;
+            insertUploadedImage(imageUrl, file.name);
+            hideUploadError();
         } catch (error) {
-            alert('Erro ao enviar imagem');
+            showUploadError(error);
             console.error(error);
         } finally {
             imageUpload.value = '';
