@@ -60,4 +60,9 @@ public class StaticPageController {
         model.addAttribute("pageText", "small programs, calculators, and experiments will live here.");
         return "placeholder";
     }
+
+    @GetMapping("/gooncorner")
+    public String gooncorner() {
+        return "gooncorner";
+    }
 }
