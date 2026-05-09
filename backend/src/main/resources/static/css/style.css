@@ -527,6 +527,7 @@ select:focus {
     border: 3px solid var(--ink);
     background: rgba(255, 248, 232, 0.85);
     padding: 1rem;
+    font-family: var(--font-ui);
     box-shadow: 4px 4px 0 var(--ink);
 }
 
@@ -1849,6 +1850,7 @@ article,
     margin: 0 0 0.75rem;
     overflow: hidden;
     color: var(--paper);
+    font-family: var(--font-ui);
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
 }
@@ -1882,11 +1884,7 @@ article,
 }
 
 .post-content h1,
-.post-content h2,
-.post-content h3,
-.post-content h4,
-.post-content h5,
-.post-content h6 {
+.post-content h2 {
     color: var(--paper);
     font-family: var(--font-display);
     line-height: 0.95;
@@ -1897,8 +1895,13 @@ article,
 .post-content li,
 .post-content blockquote,
 .post-content td,
-.post-content th {
+.post-content th,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
     color: var(--paper);
+    font-family: var(--font-ui);
 }
 
 /* PROJECTS */
