@@ -25,8 +25,14 @@
         <button class="button primary" type="submit" th:text="${editId == null} ? 'Create Star System' : 'Save Star System'">Create Star System</button>
     </form>
 
-    <div class="starSystem-board">
+    <div class="starSystem-board system-map">
         <article class="starSystem-card" th:each="starSystem : ${starSystems}">
+            <div class="system-orbit-visual" aria-hidden="true">
+                <span class="system-core"></span>
+                <span class="system-orbit first"></span>
+                <span class="system-orbit second"></span>
+                <span class="system-satellite"></span>
+            </div>
             <div class="starSystem-card-topline">
                 <span th:text="${starSystem.status}">ACTIVE</span>
                 <span th:text="${starSystem.priority}">HIGH</span>

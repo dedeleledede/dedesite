@@ -8,7 +8,12 @@
     <div class="observatory-hero compact">
         <p class="observatory-kicker">Observatory</p>
         <h1>Sky Map</h1>
-        <p th:text="|${skyMap.weekStart} to ${skyMap.weekEnd}|">week</p>
+        <div class="sky-calendar-heading">
+            <strong th:text="${#temporals.format(skyMap.weekStart, 'MMMM yyyy')}">May 2026</strong>
+            <span th:if="${skyMap.weekStart.month != skyMap.weekEnd.month}"
+                  th:text="|to ${#temporals.format(skyMap.weekEnd, 'MMMM yyyy')}|">to June 2026</span>
+            <small th:text="|week ${#temporals.format(skyMap.weekStart, 'dd')} - ${#temporals.format(skyMap.weekEnd, 'dd')}|">week 25 - 31</small>
+        </div>
     </div>
     <nav class="observatory-tabs" aria-label="Observatory sections">
         <a th:href="@{/observatory}">Mission Control</a>
@@ -40,6 +45,25 @@
         <span th:text="|Scheduled Stars: ${skyMap.scheduledHours()}h|">Scheduled Stars</span>
     </div>
 
+    <section class="sky-day-detail" th:if="${selectedDay != null}">
+        <div class="sky-day-detail-heading">
+            <div>
+                <p class="observatory-kicker">Day Timeline</p>
+                <h2 th:text="${#temporals.format(selectedDay, 'EEEE dd')}">MONDAY 25</h2>
+                <small th:text="${#temporals.format(selectedDay, 'MMMM yyyy')}">May 2026</small>
+            </div>
+            <a class="button" th:href="@{/observatory/sky-map(week=${skyMap.weekStart},timeFormat=${twelveHourClock ? '12' : '24'})}">Close</a>
+        </div>
+        <p class="empty-state" th:if="${#lists.isEmpty(dayTimeline)}">No timed blocks for this day.</p>
+        <div class="sky-day-timeline">
+            <article class="sky-timeline-block" th:each="block : ${dayTimeline}">
+                <strong th:text="${observatoryService.formatRange(block.start, block.end, twelveHourClock)}">00:00 - 12:00</strong>
+                <span th:text="${block.type}">Orbit</span>
+                <em th:text="${block.title}">Sleep</em>
+            </article>
+        </div>
+    </section>
+
     <div class="sky-table-wrap">
         <table class="sky-week-table">
             <thead>
@@ -56,7 +80,7 @@
                 <th scope="row">
                     <a class="sky-day-link" th:href="@{/observatory/sky-map(week=${skyMap.weekStart},day=${day.date},timeFormat=${twelveHourClock ? '12' : '24'})}">
                         <span th:text="${day.date.dayOfWeek}">MONDAY</span>
-                        <small th:text="${day.date}">date</small>
+                        <small th:text="${#temporals.format(day.date, 'dd')}">25</small>
                     </a>
                 </th>
                 <td>
@@ -91,23 +115,6 @@
             </tbody>
         </table>
     </div>
-    <section class="sky-day-detail" th:if="${selectedDay != null}">
-        <div class="sky-day-detail-heading">
-            <div>
-                <p class="observatory-kicker">Day Timeline</p>
-                <h2 th:text="|${selectedDay.dayOfWeek} ${selectedDay}|">MONDAY</h2>
-            </div>
-            <a class="button" th:href="@{/observatory/sky-map(week=${skyMap.weekStart},timeFormat=${twelveHourClock ? '12' : '24'})}">Close</a>
-        </div>
-        <p class="empty-state" th:if="${#lists.isEmpty(dayTimeline)}">No timed blocks for this day.</p>
-        <div class="sky-day-timeline">
-            <article class="sky-timeline-block" th:each="block : ${dayTimeline}">
-                <strong th:text="${observatoryService.formatRange(block.start, block.end, twelveHourClock)}">00:00 - 12:00</strong>
-                <span th:text="${block.type}">Orbit</span>
-                <em th:text="${block.title}">Sleep</em>
-            </article>
-        </div>
-    </section>
 </section>
 </body>
 </html>

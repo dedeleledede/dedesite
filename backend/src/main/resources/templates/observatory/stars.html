@@ -21,30 +21,39 @@
     <form class="observatory-form" th:action="${editId == null} ? @{/observatory/stars} : @{/observatory/stars/{publicId}(publicId=${editId})}" th:object="${star}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <h2 th:text="${editId == null} ? 'Add Star' : 'Edit Star'">Add Star</h2>
-        <label>Title <input th:field="*{title}" required></label>
-        <label>Description <textarea th:field="*{description}"></textarea></label>
-        <label>Star System
-            <select name="starSystemId">
-                <option value="">No Star System</option>
-                <option th:each="starSystem : ${starSystems}" th:value="${starSystem.id}" th:selected="${star.starSystem != null and star.starSystem.id == starSystem.id}" th:text="${starSystem.name}"></option>
-            </select>
-        </label>
-        <label>Status <select th:field="*{status}"><option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option></select></label>
-        <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
-        <label>Due date <input type="date" th:field="*{dueDate}"></label>
-        <label>Estimated minutes <input type="number" min="0" th:field="*{estimatedMinutes}"></label>
-        <label th:if="${twelveHourClock}">Scheduled start <input type="datetime-local" lang="en-GB" th:field="*{scheduledStart}"></label>
-        <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
-            <label>Scheduled start date <input class="observatory-date-entry" type="date" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'yyyy-MM-dd') : ''}"></label>
-            <label>Scheduled start time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'HH:mm') : ''}"></label>
-            <input type="hidden" th:field="*{scheduledStart}">
-        </div>
-        <label th:if="${twelveHourClock}">Scheduled end <input type="datetime-local" lang="en-GB" th:field="*{scheduledEnd}"></label>
-        <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
-            <label>Scheduled end date <input class="observatory-date-entry" type="date" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'yyyy-MM-dd') : ''}"></label>
-            <label>Scheduled end time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'HH:mm') : ''}"></label>
-            <input type="hidden" th:field="*{scheduledEnd}">
-        </div>
+        <fieldset class="star-form-section">
+            <legend>Identity</legend>
+            <label>Title <input th:field="*{title}" required></label>
+            <label>Star System
+                <select name="starSystemId">
+                    <option value="">Nebula / no system</option>
+                    <option th:each="starSystem : ${starSystems}" th:value="${starSystem.id}" th:selected="${star.starSystem != null and star.starSystem.id == starSystem.id}" th:text="${starSystem.name}"></option>
+                </select>
+            </label>
+            <label>Status <select th:field="*{status}"><option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option></select></label>
+            <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
+        </fieldset>
+        <fieldset class="star-form-section flight-plan">
+            <legend>Flight Plan</legend>
+            <label>Due date <input type="date" th:field="*{dueDate}"></label>
+            <label>Estimated minutes <input type="number" min="0" th:field="*{estimatedMinutes}"></label>
+            <label th:if="${twelveHourClock}">Scheduled start <input type="datetime-local" lang="en-GB" th:field="*{scheduledStart}"></label>
+            <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
+                <label>Start date <input class="observatory-date-entry" type="date" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'yyyy-MM-dd') : ''}"></label>
+                <label>Start time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'HH:mm') : ''}"></label>
+                <input type="hidden" th:field="*{scheduledStart}">
+            </div>
+            <label th:if="${twelveHourClock}">Scheduled end <input type="datetime-local" lang="en-GB" th:field="*{scheduledEnd}"></label>
+            <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
+                <label>End date <input class="observatory-date-entry" type="date" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'yyyy-MM-dd') : ''}"></label>
+                <label>End time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'HH:mm') : ''}"></label>
+                <input type="hidden" th:field="*{scheduledEnd}">
+            </div>
+        </fieldset>
+        <fieldset class="star-form-section notes">
+            <legend>Notes</legend>
+            <label>Description <textarea th:field="*{description}"></textarea></label>
+        </fieldset>
         <button class="button primary" type="submit" th:text="${editId == null} ? 'Add Star' : 'Save Star'">Add Star</button>
     </form>
 

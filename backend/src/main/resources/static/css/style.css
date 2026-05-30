@@ -2374,6 +2374,10 @@ article,
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
 }
 
+.mission-control-grid .observatory-panel:last-child {
+    grid-column: span 2;
+}
+
 .observatory-panel,
 .starSystem-card,
 .sky-day {
@@ -2433,6 +2437,31 @@ article,
     grid-column: 1 / -1;
 }
 
+.star-form-section {
+    border: 1px solid rgba(244, 238, 223, 0.38);
+    display: grid;
+    gap: 0.7rem;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    margin: 0;
+    padding: 0.75rem;
+}
+
+.star-form-section legend {
+    color: var(--paper-dirty);
+    font-family: var(--font-ui);
+    padding: 0 0.35rem;
+    text-transform: uppercase;
+}
+
+.star-form-section.notes label {
+    grid-column: 1 / -1;
+}
+
+.star-form-section.flight-plan {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .observatory-form label {
     color: var(--obs-line);
     display: grid;
@@ -2450,7 +2479,10 @@ article,
 }
 
 .observatory-form textarea {
-    min-height: 5rem;
+    height: 2.2rem;
+    min-height: 2.2rem;
+    overflow: auto;
+    resize: none;
 }
 
 .observatory-form .check-row {
@@ -2458,8 +2490,29 @@ article,
     display: flex;
 }
 
-.observatory-form .check-row input {
-    min-height: auto;
+.observatory-page input[type="checkbox"] {
+    appearance: none;
+    background: var(--paper);
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0 rgba(244, 238, 223, 0.45);
+    cursor: pointer;
+    flex: 0 0 auto;
+    height: 1.1rem;
+    min-height: 1.1rem;
+    padding: 0;
+    width: 1.1rem;
+}
+
+.observatory-page input[type="checkbox"]:checked {
+    background:
+        linear-gradient(45deg, transparent 42%, var(--blood) 42% 58%, transparent 58%),
+        linear-gradient(-45deg, transparent 42%, var(--blood) 42% 58%, transparent 58%),
+        var(--paper);
+}
+
+.observatory-page input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--paper-dirty);
+    outline-offset: 2px;
 }
 
 .observatory-form button {
@@ -2501,6 +2554,61 @@ article,
 
 .starSystem-card h2 a {
     color: var(--obs-ink);
+}
+
+.system-map {
+    align-items: stretch;
+}
+
+.starSystem-card {
+    overflow: hidden;
+    position: relative;
+}
+
+.system-orbit-visual {
+    height: 7rem;
+    margin: -0.2rem auto 0.7rem;
+    position: relative;
+    width: 9rem;
+}
+
+.system-core,
+.system-orbit,
+.system-satellite {
+    display: block;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.system-core {
+    background: var(--paper);
+    box-shadow: 0 0 0 0.28rem var(--blood);
+    height: 0.8rem;
+    width: 0.8rem;
+}
+
+.system-orbit {
+    border: 1px solid rgba(244, 238, 223, 0.55);
+    border-radius: 50%;
+}
+
+.system-orbit.first {
+    height: 3.1rem;
+    width: 5.4rem;
+}
+
+.system-orbit.second {
+    height: 5.1rem;
+    width: 8.5rem;
+}
+
+.system-satellite {
+    background: var(--paper-dirty);
+    height: 0.5rem;
+    margin: -1.6rem 0 0 2.15rem;
+    width: 0.5rem;
 }
 
 .next-star {
@@ -2551,6 +2659,14 @@ article,
 
     .observatory-row {
         display: grid;
+    }
+
+    .mission-control-grid .observatory-panel:last-child {
+        grid-column: auto;
+    }
+
+    .star-form-section.flight-plan {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -2690,6 +2806,28 @@ article,
     justify-content: space-between;
 }
 
+.sky-calendar-heading {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.55rem;
+}
+
+.sky-calendar-heading strong {
+    color: var(--paper);
+    font-family: var(--font-ui);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+}
+
+.sky-calendar-heading span,
+.sky-calendar-heading small {
+    color: var(--obs-dim);
+    font-family: var(--font-ui);
+    text-transform: uppercase;
+}
+
 .sky-control-group {
     border: 1px solid rgba(244, 238, 223, 0.35);
     padding: 0.45rem;
@@ -2762,6 +2900,7 @@ article,
 
 .sky-day-detail {
     border: 2px solid rgba(244, 238, 223, 0.55);
+    margin: 1rem 0;
     padding: 0.8rem;
 }
 

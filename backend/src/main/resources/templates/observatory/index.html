@@ -29,7 +29,7 @@
         <strong th:text="${mission.mainFocus.title}">Star</strong>
     </div>
 
-    <div class="observatory-grid">
+    <div class="observatory-grid mission-control-grid">
         <article class="observatory-panel">
             <h2>Today's Orbit</h2>
             <p class="empty-state" th:if="${#lists.isEmpty(mission.todayOrbits)}">No fixed Orbits today.</p>
