@@ -3,7 +3,8 @@ package com.zavan.dedesite.controller;
 import com.zavan.dedesite.service.GuestbookService;
 import com.zavan.dedesite.service.PostService;
 import com.zavan.dedesite.service.SiteStatusService;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +25,10 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Model model, HttpSession session) {
-        model.addAttribute("visitorNumber", siteStatusService.getVisitorNumber(session));
+    public String home(Model model, HttpServletRequest request, HttpServletResponse response) {
+        long visitorNumber = siteStatusService.getVisitorNumber(request, response);
+        model.addAttribute("visitorNumber", visitorNumber);
+        model.addAttribute("onlineVisitors", siteStatusService.getOnlineVisitors(visitorNumber));
         model.addAttribute("lastUpdateDistance", siteStatusService.getLastUpdateDistance());
         model.addAttribute("latestGuestbookEntry", guestbookService.getLatestEntry().orElse(null));
         model.addAttribute("latestPost", postService.getLatestPost().orElse(null));

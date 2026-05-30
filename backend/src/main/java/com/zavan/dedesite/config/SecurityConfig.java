@@ -45,6 +45,7 @@ public class SecurityConfig {
                 
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf
+              .ignoringRequestMatchers("/presence/ping")
               .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             )
             .authorizeHttpRequests(auth -> auth
@@ -52,7 +53,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 .requestMatchers("/observatory/**").authenticated()
                 // páginas públicas
-                .requestMatchers("/", "/blog", "/blog/**", "/guestbook", "/guestbook/**", "/projects", "/music", "/gerp", "/profile", "/chat", "/themes", "/anonymous", "/apps", "/gooncorner", "/login", "/register", "/health", "/access-denied", "/error", "/favicon.ico").permitAll()
+                .requestMatchers("/", "/blog", "/blog/**", "/guestbook", "/guestbook/**", "/projects", "/music", "/gerp", "/profile", "/chat", "/themes", "/anonymous", "/apps", "/gooncorner", "/login", "/register", "/health", "/presence/ping", "/access-denied", "/error", "/favicon.ico").permitAll()
                 // estáticos comuns (se tiver)
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
                 // upload restrito (mas também há @PreAuthorize no controller)

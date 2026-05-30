@@ -56,9 +56,7 @@ public class StaticPageController {
 
     @GetMapping("/apps")
     public String apps(Model model) {
-        model.addAttribute("pageTitle", "apps");
-        model.addAttribute("pageText", "small programs, calculators, and experiments will live here.");
-        return "placeholder";
+        return "apps";
     }
 
     @GetMapping("/gooncorner")

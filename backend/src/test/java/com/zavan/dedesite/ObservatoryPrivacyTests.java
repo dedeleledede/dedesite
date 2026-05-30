@@ -188,6 +188,20 @@ class ObservatoryPrivacyTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Star Systems")));
     }
 
+    @Test
+    void appsPageOffersObservatoryAccess() throws Exception {
+        mockMvc.perform(get("/apps").with(user("alice").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Open Observatory")));
+    }
+
+    @Test
+    void anonymousPresenceHeartbeatWorksWithoutCsrfToken() throws Exception {
+        mockMvc.perform(post("/presence/ping")
+                        .header("User-Agent", "Mozilla/5.0 Firefox/128.0"))
+                .andExpect(status().isNoContent());
+    }
+
     private User saveUser(String username) {
         User user = new User();
         user.setUsername(username);

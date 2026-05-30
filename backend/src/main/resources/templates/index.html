@@ -8,6 +8,25 @@
 <section class="home-page poster-home">
     <section class="poster-lead">
         <div class="poster-frame">
+            <div class="poster-schematic" aria-hidden="true">
+                <span class="schematic-ring outer"></span>
+                <span class="schematic-ring inner"></span>
+                <span class="schematic-axis horizontal"></span>
+                <span class="schematic-axis vertical"></span>
+                <span class="schematic-node node-one"></span>
+                <span class="schematic-node node-two"></span>
+                <span class="schematic-node node-three"></span>
+                <span class="schematic-label">SYS/ESTHER</span>
+            </div>
+            <div class="presence-cursors" aria-label="anonymous visitors online">
+                <span class="presence-cursor"
+                      th:each="visitor : ${onlineVisitors}"
+                      th:classappend="${visitor.current} ? ' current' : ''"
+                      th:title="${visitor.current} ? 'your cursor' : 'another visitor online'">
+                    <i aria-hidden="true">↖</i>
+                    <small th:text="${#numbers.formatInteger(visitor.number, 3)}">001</small>
+                </span>
+            </div>
             <p class="poster-code">visitor file <span th:text="${#numbers.formatInteger(visitorNumber, 3)}">001</span></p>
             <h1 th:if="${#authorization.expression('isAuthenticated()')}">
                 WELCOME <span class="welcome-identity" th:text="${#authentication.name}">username</span>

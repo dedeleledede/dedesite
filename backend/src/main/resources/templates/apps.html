@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Apps - Esther</title>
+</head>
+<body>
+<section class="apps-page">
+    <h1>Apps</h1>
+    <p>small programs, calculators, and experiments wired into dedesite.</p>
+    <div class="apps-directory">
+        <article class="app-entry" sec:authorize="isAuthenticated()">
+            <span>private / planning</span>
+            <h2>Observatory</h2>
+            <p>mission control, sky maps, star systems, and your private schedule.</p>
+            <a class="button primary" th:href="@{/observatory}">Open Observatory</a>
+        </article>
+        <article class="app-entry" sec:authorize="isAnonymous()">
+            <span>private / planning</span>
+            <h2>Observatory</h2>
+            <p>sign in to open your private mission control.</p>
+            <a class="button" th:href="@{/login}">Sign In</a>
+        </article>
+    </div>
+    <a class="button" th:href="@{/}">back home</a>
+</section>
+</body>
+</html>
