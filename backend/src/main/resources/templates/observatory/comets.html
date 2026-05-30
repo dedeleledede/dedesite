@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Comets - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Comets</h1>
+        <p>deadlines, exams, appointments, deliveries, and one-time events.</p>
+    </div>
+    <nav class="observatory-tabs">
+        <a th:href="@{/observatory}">Mission Control</a>
+        <a th:href="@{/observatory/comets(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
+        <a th:href="@{/observatory/sky-map}">Sky Map</a>
+        <a th:href="@{/observatory/pulsars}">Pulsars</a>
+    </nav>
+
+    <form class="observatory-form" th:action="${editId == null} ? @{/observatory/comets} : @{/observatory/comets/{id}(id=${editId})}" th:object="${comet}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <h2 th:text="${editId == null} ? 'Add Comet' : 'Edit Comet'">Add Comet</h2>
+        <label>Title <input th:field="*{title}" required></label>
+        <label>Description <textarea th:field="*{description}"></textarea></label>
+        <label>Type <select th:field="*{type}"><option th:each="type : ${types}" th:value="${type}" th:text="${type}"></option></select></label>
+        <label>Date <input type="date" th:field="*{date}" required></label>
+        <label>Start <input type="time" lang="en-GB" th:field="*{startTime}"></label>
+        <label>End <input type="time" lang="en-GB" th:field="*{endTime}"></label>
+        <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
+        <label>Related Constellation
+            <select name="constellationId">
+                <option value="">None</option>
+                <option th:each="constellation : ${constellations}" th:value="${constellation.id}" th:selected="${comet.relatedConstellation != null and comet.relatedConstellation.id == constellation.id}" th:text="${constellation.name}"></option>
+            </select>
+        </label>
+        <button class="button primary" type="submit" th:text="${editId == null} ? 'Add Comet' : 'Save Comet'">Add Comet</button>
+    </form>
+
+    <div class="observatory-table">
+        <article class="observatory-row" th:each="comet : ${comets}" th:classappend="${observatoryService.isSupernova(comet)} ? ' supernova-row'">
+            <div>
+                <strong th:text="${comet.title}">Comet</strong>
+                <span th:text="|${comet.date} ${comet.startTime != null ? observatoryService.formatTime(comet.startTime, twelveHourClock) : ''}|">date</span>
+                <em th:text="${observatoryService.isSupernova(comet)} ? 'Supernova' : ${comet.type}">type</em>
+            </div>
+            <div class="row-actions">
+                <a class="button" th:href="@{/observatory/comets/{id}/edit(id=${comet.id})}">Edit</a>
+                <form th:action="@{/observatory/comets/{id}/delete(id=${comet.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Delete</button></form>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

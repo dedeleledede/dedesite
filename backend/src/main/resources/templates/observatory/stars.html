@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Stars - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Stars</h1>
+        <p>tasks inside Constellations, from Nebula to Done.</p>
+    </div>
+    <nav class="observatory-tabs">
+        <a th:href="@{/observatory}">Mission Control</a>
+        <a th:href="@{/observatory/stars}">all</a>
+        <a th:each="status : ${statuses}" th:href="@{/observatory/stars(status=${status})}" th:text="${status}">READY</a>
+        <a th:href="@{/observatory/pulsars}">Pulsars</a>
+    </nav>
+
+    <form class="observatory-form" th:action="${editId == null} ? @{/observatory/stars} : @{/observatory/stars/{id}(id=${editId})}" th:object="${star}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <h2 th:text="${editId == null} ? 'Add Star' : 'Edit Star'">Add Star</h2>
+        <label>Title <input th:field="*{title}" required></label>
+        <label>Description <textarea th:field="*{description}"></textarea></label>
+        <label>Constellation
+            <select name="constellationId">
+                <option value="">No Constellation</option>
+                <option th:each="constellation : ${constellations}" th:value="${constellation.id}" th:selected="${star.constellation != null and star.constellation.id == constellation.id}" th:text="${constellation.name}"></option>
+            </select>
+        </label>
+        <label>Status <select th:field="*{status}"><option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option></select></label>
+        <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
+        <label>Due date <input type="date" th:field="*{dueDate}"></label>
+        <label>Estimated minutes <input type="number" min="0" th:field="*{estimatedMinutes}"></label>
+        <label>Scheduled start <input type="datetime-local" lang="en-GB" th:field="*{scheduledStart}"></label>
+        <label>Scheduled end <input type="datetime-local" lang="en-GB" th:field="*{scheduledEnd}"></label>
+        <button class="button primary" type="submit" th:text="${editId == null} ? 'Add Star' : 'Save Star'">Add Star</button>
+    </form>
+
+    <div class="observatory-table">
+        <article class="observatory-row" th:each="star : ${stars}">
+            <div>
+                <strong th:text="${star.title}">Star</strong>
+                <span th:text="${star.constellation != null ? star.constellation.name : 'Nebula'}">Constellation</span>
+                <em th:text="|${star.status} / ${star.priority}|">READY</em>
+            </div>
+            <div class="row-actions">
+                <a class="button" th:href="@{/observatory/stars/{id}/edit(id=${star.id})}">Edit</a>
+                <form th:if="${star.status.name() != 'DONE'}" th:action="@{/observatory/stars/{id}/complete(id=${star.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Complete</button></form>
+                <form th:action="@{/observatory/stars/{id}/delete(id=${star.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Delete</button></form>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

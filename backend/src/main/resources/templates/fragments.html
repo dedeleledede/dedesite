@@ -1,6 +1,6 @@
 <!-- fragments.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 
 <body>
 
@@ -11,6 +11,7 @@
         <a th:href="@{/blog}">Blog</a>
         <a th:href="@{/guestbook}">Guestbook</a>
         <a th:href="@{/projects}">Projects</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/observatory}">Observatory</a>
         <a th:href="@{/music}">Music</a>
         <a th:href="@{/gerp}">Gerp</a>
         <a th:href="@{/profile}">Profile</a>

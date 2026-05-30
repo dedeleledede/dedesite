@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Nebula - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Nebula</h1>
+        <p>backlog Stars not scheduled yet.</p>
+    </div>
+    <nav class="observatory-tabs"><a th:href="@{/observatory}">Mission Control</a><a th:href="@{/observatory/stars}">Add Star</a><a th:href="@{/observatory/pulsars}">Pulsars</a></nav>
+    <div class="observatory-table">
+        <p class="empty-state" th:if="${#lists.isEmpty(stars)}">No Nebula items.</p>
+        <article class="observatory-row" th:each="star : ${stars}">
+            <div>
+                <strong th:text="${star.title}">Star</strong>
+                <span th:text="${star.constellation != null ? star.constellation.name : 'unassigned'}">Constellation</span>
+                <em th:text="${star.priority}">MEDIUM</em>
+            </div>
+            <div class="row-actions">
+                <a class="button" th:href="@{/observatory/stars/{id}/edit(id=${star.id})}">Edit</a>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

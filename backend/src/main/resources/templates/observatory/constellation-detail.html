@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${constellation.name} + ' - Observatory'">Constellation</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Constellation</p>
+        <h1 th:text="${constellation.name}">Constellation</h1>
+        <p th:text="${constellation.description}">details</p>
+    </div>
+    <nav class="observatory-tabs"><a th:href="@{/observatory}">Mission Control</a><a th:href="@{/observatory/constellations}">Constellations</a><a th:href="@{/observatory/stars}">Add Star</a><a th:href="@{/observatory/comets}">Add Comet</a><a th:href="@{/observatory/pulsars}">Pulsars</a></nav>
+
+    <div class="sky-stats">
+        <span th:text="|Status: ${constellation.status}|">status</span>
+        <span th:text="|Priority: ${constellation.priority}|">priority</span>
+        <span th:text="|Open Stars: ${openStarCount}|">open</span>
+        <span th:text="|Next Star: ${nextStar != null ? nextStar.title : 'none'}|">next</span>
+    </div>
+
+    <div class="observatory-grid">
+        <article class="observatory-panel">
+            <h2>Stars</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(stars)}">No Stars in this Constellation.</p>
+            <ul class="astro-list">
+                <li th:each="star : ${stars}">
+                    <strong th:text="${star.title}">Star</strong>
+                    <span th:text="${star.status}">READY</span>
+                    <em th:text="${star.dueDate}">date</em>
+                </li>
+            </ul>
+        </article>
+        <article class="observatory-panel">
+            <h2>Related Comets</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(comets)}">No related Comets.</p>
+            <ul class="astro-list">
+                <li th:each="comet : ${comets}">
+                    <strong th:text="${comet.title}">Comet</strong>
+                    <span th:text="${comet.type}">DEADLINE</span>
+                    <em th:text="${comet.date}">date</em>
+                </li>
+            </ul>
+        </article>
+    </div>
+</section>
+</body>
+</html>

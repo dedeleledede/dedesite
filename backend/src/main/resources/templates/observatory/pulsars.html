@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Pulsars - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Pulsars</h1>
+        <p>recurring study and practice plans. Manual scheduling still happens through Stars.</p>
+    </div>
+    <nav class="observatory-tabs">
+        <a th:href="@{/observatory}">Mission Control</a>
+        <a th:href="@{/observatory/sky-map}">Sky Map</a>
+        <a th:href="@{/observatory/stars}">Stars</a>
+        <a th:href="@{/observatory/comets}">Comets</a>
+    </nav>
+
+    <form class="observatory-form" th:action="${editId == null} ? @{/observatory/pulsars} : @{/observatory/pulsars/{id}(id=${editId})}" th:object="${pulsar}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <h2 th:text="${editId == null} ? 'Create Pulsar' : 'Edit Pulsar'">Create Pulsar</h2>
+        <label>Title <input th:field="*{title}" required></label>
+        <label>Subject <input th:field="*{subject}"></label>
+        <label>Frequency
+            <select th:field="*{frequency}">
+                <option th:each="frequency : ${frequencies}" th:value="${frequency}" th:text="${frequency}"></option>
+            </select>
+        </label>
+        <label>Target minutes per week <input type="number" min="0" th:field="*{targetMinutesPerWeek}"></label>
+        <label>Related exam
+            <select name="relatedExamId">
+                <option value="">None</option>
+                <option th:each="exam : ${exams}" th:value="${exam.id}" th:selected="${pulsar.relatedExam != null and pulsar.relatedExam.id == exam.id}" th:text="${exam.title}"></option>
+            </select>
+        </label>
+        <label class="check-row"><input type="checkbox" th:field="*{active}"> active Pulsar</label>
+        <button class="button primary" type="submit" th:text="${editId == null} ? 'Create Pulsar' : 'Save Pulsar'">Create Pulsar</button>
+    </form>
+
+    <div class="observatory-table">
+        <p class="empty-state" th:if="${#lists.isEmpty(pulsars)}">No Pulsars yet.</p>
+        <article class="observatory-row" th:each="pulsar : ${pulsars}">
+            <div>
+                <strong th:text="${pulsar.title}">Pulsar</strong>
+                <span th:text="|${pulsar.subject ?: 'practice'} / ${pulsar.frequency}|">subject</span>
+                <em th:text="|${pulsar.targetMinutesPerWeek ?: 0} min weekly / ${pulsar.active ? 'active' : 'inactive'}|">target</em>
+            </div>
+            <div class="row-actions">
+                <a class="button" th:href="@{/observatory/pulsars/{id}/edit(id=${pulsar.id})}">Edit</a>
+                <form th:action="@{/observatory/pulsars/{id}/toggle(id=${pulsar.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Toggle</button></form>
+                <form th:action="@{/observatory/pulsars/{id}/delete(id=${pulsar.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Delete</button></form>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

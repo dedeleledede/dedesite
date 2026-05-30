@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Mission Control - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Mission Control</h1>
+        <p>today's private sky map, launch windows, supernovas, and next stars.</p>
+    </div>
+
+    <nav class="observatory-tabs" aria-label="Observatory sections">
+        <a th:href="@{/observatory}">Mission Control</a>
+        <a th:href="@{/observatory/sky-map}">Sky Map</a>
+        <a th:href="@{/observatory/orbits}">Orbits</a>
+        <a th:href="@{/observatory/constellations}">Constellations</a>
+        <a th:href="@{/observatory/stars}">Stars</a>
+        <a th:href="@{/observatory/comets}">Comets</a>
+        <a th:href="@{/observatory/nebula}">Nebula</a>
+        <a th:href="@{/observatory/pulsars}">Pulsars</a>
+        <a th:href="@{/observatory(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
+    </nav>
+
+    <div class="mission-focus" th:if="${mission.mainFocus != null}">
+        <span>recommended main focus</span>
+        <strong th:text="${mission.mainFocus.title}">Star</strong>
+    </div>
+
+    <div class="observatory-grid">
+        <article class="observatory-panel">
+            <h2>Today's Orbit</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(mission.todayOrbits)}">No fixed Orbits today.</p>
+            <ul class="astro-list">
+                <li th:each="orbit : ${mission.todayOrbits}">
+                    <strong th:text="${orbit.title}">Work</strong>
+                    <span th:text="${observatoryService.formatRange(orbit.startTime, orbit.endTime, twelveHourClock)}">09:00 - 10:00</span>
+                    <em th:text="${orbit.category}">WORK</em>
+                </li>
+            </ul>
+        </article>
+
+        <article class="observatory-panel">
+            <h2>Scheduled Stars</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(mission.scheduledStars)}">No Stars scheduled today.</p>
+            <ul class="astro-list">
+                <li th:each="star : ${mission.scheduledStars}">
+                    <strong th:text="${star.title}">Star</strong>
+                    <span th:text="${observatoryService.formatRange(star.scheduledStart, star.scheduledEnd, twelveHourClock)}">13:00 - 14:00</span>
+                    <em th:text="${star.status}">SCHEDULED</em>
+                </li>
+            </ul>
+        </article>
+
+        <article class="observatory-panel supernova-panel">
+            <h2>Supernovas</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(mission.supernovaStars) and #lists.isEmpty(mission.supernovaComets)}">No urgent Supernovas in range.</p>
+            <ul class="astro-list">
+                <li th:each="star : ${mission.supernovaStars}">
+                    <strong th:text="${star.title}">Urgent Star</strong>
+                    <span th:text="${star.dueDate}">date</span>
+                    <em>Star</em>
+                </li>
+                <li th:each="comet : ${mission.supernovaComets}">
+                    <strong th:text="${comet.title}">Urgent Comet</strong>
+                    <span th:text="${comet.date}">date</span>
+                    <em>Comet</em>
+                </li>
+            </ul>
+        </article>
+
+        <article class="observatory-panel">
+            <h2>Launch Windows</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(mission.launchWindows)}">No Launch Windows found today.</p>
+            <ul class="astro-list">
+                <li th:each="window : ${mission.launchWindows}">
+                    <strong th:text="${observatoryService.formatLaunchWindow(window, mission.date, twelveHourClock)}">09:00 - 10:00</strong>
+                    <span th:text="|${window.minutes()} min|">60 min</span>
+                </li>
+            </ul>
+        </article>
+
+        <article class="observatory-panel">
+            <h2>Nebula Items</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(mission.nebulaStars)}">Nebula is clear.</p>
+            <ul class="astro-list">
+                <li th:each="star : ${mission.nebulaStars}">
+                    <strong th:text="${star.title}">Backlog Star</strong>
+                    <span th:text="${star.priority}">MEDIUM</span>
+                </li>
+            </ul>
+        </article>
+
+        <article class="observatory-panel">
+            <h2>Comets Today</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(mission.todayComets)}">No Comets crossing today.</p>
+            <ul class="astro-list">
+                <li th:each="comet : ${mission.todayComets}">
+                    <strong th:text="${comet.title}">Exam</strong>
+                    <span th:text="${comet.type}">EXAM</span>
+                </li>
+            </ul>
+        </article>
+
+        <article class="observatory-panel">
+            <h2>Pulsars</h2>
+            <p class="empty-state" th:if="${#lists.isEmpty(mission.activePulsars)}">No active Pulsars.</p>
+            <ul class="astro-list">
+                <li th:each="pulsar : ${mission.activePulsars}">
+                    <strong th:text="${pulsar.title}">Practice</strong>
+                    <span th:text="${pulsar.frequency}">WEEKLY</span>
+                    <em th:text="|${pulsar.targetMinutesPerWeek ?: 0} min weekly|">minutes</em>
+                </li>
+            </ul>
+        </article>
+    </div>
+</section>
+</body>
+</html>

@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
@@ -38,9 +39,7 @@ public class SecurityConfig {
             )
 
             .exceptionHandling(ex -> ex
-                    .authenticationEntryPoint((request, response, authException) -> {
-                        response.sendRedirect("/access-denied");
-                    })
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                     .accessDeniedPage("/access-denied")
             )
                 
@@ -51,6 +50,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // arquivos públicos (imagens)
                 .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                .requestMatchers("/observatory/**").authenticated()
                 // páginas públicas
                 .requestMatchers("/", "/blog", "/blog/**", "/guestbook", "/guestbook/**", "/projects", "/music", "/gerp", "/profile", "/chat", "/themes", "/anonymous", "/apps", "/gooncorner", "/login", "/register", "/health", "/access-denied", "/error", "/favicon.ico").permitAll()
                 // estáticos comuns (se tiver)

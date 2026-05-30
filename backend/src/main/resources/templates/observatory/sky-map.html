@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Sky Map - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Sky Map</h1>
+        <p th:text="|${skyMap.weekStart} to ${skyMap.weekEnd}|">week</p>
+    </div>
+    <nav class="observatory-tabs" aria-label="Observatory sections">
+        <a th:href="@{/observatory}">Mission Control</a>
+        <a th:href="@{/observatory/sky-map(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
+        <a th:href="@{/observatory/orbits}">Orbits</a>
+        <a th:href="@{/observatory/stars}">Stars</a>
+        <a th:href="@{/observatory/comets}">Comets</a>
+        <a th:href="@{/observatory/pulsars}">Pulsars</a>
+    </nav>
+
+    <div class="sky-warning" th:if="${skyMap.overloaded}">
+        Your Sky Map is overloaded this week.
+    </div>
+
+    <div class="sky-stats">
+        <span th:text="|Launch Windows: ${skyMap.availableHours()}h|">Launch Windows</span>
+        <span th:text="|Scheduled Stars: ${skyMap.scheduledHours()}h|">Scheduled Stars</span>
+    </div>
+
+    <div class="sky-table-wrap">
+        <table class="sky-week-table">
+            <thead>
+            <tr>
+                <th>Day</th>
+                <th>Orbits</th>
+                <th>Stars</th>
+                <th>Comets</th>
+                <th>Launch Windows</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="day : ${skyMap.days}">
+                <th scope="row">
+                    <span th:text="${day.date.dayOfWeek}">MONDAY</span>
+                    <small th:text="${day.date}">date</small>
+                </th>
+                <td>
+                    <span class="empty-state" th:if="${#lists.isEmpty(day.orbits)}">clear</span>
+                    <span class="sky-pill" th:each="orbit : ${day.orbits}">
+                        <strong th:text="${orbit.title}">Orbit</strong>
+                        <small th:text="${observatoryService.formatRange(orbit.startTime, orbit.endTime, twelveHourClock)}">time</small>
+                    </span>
+                </td>
+                <td>
+                    <span class="empty-state" th:if="${#lists.isEmpty(day.stars)}">unscheduled</span>
+                    <span class="sky-pill" th:each="star : ${day.stars}">
+                        <strong th:text="${star.title}">Star</strong>
+                        <small th:text="${observatoryService.formatRange(star.scheduledStart, star.scheduledEnd, twelveHourClock)}">time</small>
+                    </span>
+                </td>
+                <td>
+                    <span class="empty-state" th:if="${#lists.isEmpty(day.comets)}">none</span>
+                    <span class="sky-pill" th:each="comet : ${day.comets}">
+                        <strong th:text="${comet.title}">Comet</strong>
+                        <small th:text="${comet.startTime != null ? observatoryService.formatTime(comet.startTime, twelveHourClock) : comet.type}">time</small>
+                    </span>
+                </td>
+                <td>
+                    <span class="empty-state" th:if="${#lists.isEmpty(day.launchWindows)}">blocked</span>
+                    <span class="sky-pill launch" th:each="window : ${day.launchWindows}">
+                        <strong th:text="${observatoryService.formatLaunchWindow(window, day.date, twelveHourClock)}">time</strong>
+                        <small th:text="|${window.minutes()} min|">min</small>
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>
