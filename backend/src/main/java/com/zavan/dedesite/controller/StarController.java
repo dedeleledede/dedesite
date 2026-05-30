@@ -4,6 +4,7 @@ import com.zavan.dedesite.model.Star;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.service.StarSystemService;
 import com.zavan.dedesite.service.CurrentUserService;
+import com.zavan.dedesite.service.ObservatoryService;
 import com.zavan.dedesite.service.StarService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,19 +26,22 @@ public class StarController {
     private final CurrentUserService currentUserService;
     private final StarService starService;
     private final StarSystemService starSystemService;
+    private final ObservatoryService observatoryService;
 
-    public StarController(CurrentUserService currentUserService, StarService starService, StarSystemService starSystemService) {
+    public StarController(CurrentUserService currentUserService, StarService starService, StarSystemService starSystemService, ObservatoryService observatoryService) {
         this.currentUserService = currentUserService;
         this.starService = starService;
         this.starSystemService = starSystemService;
+        this.observatoryService = observatoryService;
     }
 
     @GetMapping
     public String list(@AuthenticationPrincipal UserDetails userDetails,
                        @RequestParam(required = false) Star.Status status,
+                       @RequestParam(defaultValue = "24") String timeFormat,
                        Model model) {
         User user = currentUserService.requireUser(userDetails);
-        fillModel(model, user, new Star(), null, status);
+        fillModel(model, user, new Star(), null, status, timeFormat);
         return "observatory/stars";
     }
 
@@ -46,10 +50,11 @@ public class StarController {
                          @Valid @ModelAttribute("star") Star star,
                          BindingResult bindingResult,
                          @RequestParam(required = false) Long starSystemId,
+                         @RequestParam(defaultValue = "24") String timeFormat,
                          Model model) {
         User user = currentUserService.requireUser(userDetails);
         if (bindingResult.hasErrors()) {
-            fillModel(model, user, star, null, null);
+            fillModel(model, user, star, null, null, timeFormat);
             return "observatory/stars";
         }
         starService.save(star, starSystemId, user);
@@ -57,9 +62,12 @@ public class StarController {
     }
 
     @GetMapping("/{publicId}/edit")
-    public String edit(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID publicId, Model model) {
+    public String edit(@AuthenticationPrincipal UserDetails userDetails,
+                       @PathVariable UUID publicId,
+                       @RequestParam(defaultValue = "24") String timeFormat,
+                       Model model) {
         User user = currentUserService.requireUser(userDetails);
-        fillModel(model, user, starService.getOwned(publicId, user), publicId, null);
+        fillModel(model, user, starService.getOwned(publicId, user), publicId, null, timeFormat);
         return "observatory/stars";
     }
 
@@ -69,10 +77,11 @@ public class StarController {
                          @Valid @ModelAttribute("star") Star star,
                          BindingResult bindingResult,
                          @RequestParam(required = false) Long starSystemId,
+                         @RequestParam(defaultValue = "24") String timeFormat,
                          Model model) {
         User user = currentUserService.requireUser(userDetails);
         if (bindingResult.hasErrors()) {
-            fillModel(model, user, star, publicId, null);
+            fillModel(model, user, star, publicId, null, timeFormat);
             return "observatory/stars";
         }
         starService.update(publicId, star, starSystemId, user);
@@ -91,7 +100,8 @@ public class StarController {
         return "redirect:/observatory/stars";
     }
 
-    private void fillModel(Model model, User user, Star star, UUID editId, Star.Status filterStatus) {
+    private void fillModel(Model model, User user, Star star, UUID editId, Star.Status filterStatus, String timeFormat) {
+        boolean twelveHourClock = observatoryService.useTwelveHourClock(timeFormat);
         model.addAttribute("stars", filterStatus == null ? starService.findAll(user) : starService.findByStatus(user, filterStatus));
         model.addAttribute("star", star);
         model.addAttribute("editId", editId);
@@ -99,5 +109,8 @@ public class StarController {
         model.addAttribute("statuses", Star.Status.values());
         model.addAttribute("priorities", Star.Priority.values());
         model.addAttribute("starSystems", starSystemService.findOpen(user));
+        model.addAttribute("twelveHourClock", twelveHourClock);
+        model.addAttribute("timeFormat", observatoryService.timeFormatLabel(twelveHourClock));
+        model.addAttribute("timeFormatToggle", observatoryService.oppositeTimeFormat(twelveHourClock));
     }
 }

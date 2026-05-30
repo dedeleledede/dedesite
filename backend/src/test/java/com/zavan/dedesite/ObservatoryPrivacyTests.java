@@ -2,7 +2,9 @@ package com.zavan.dedesite;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -140,6 +142,42 @@ class ObservatoryPrivacyTests {
         starRepository.saveAndFlush(star);
 
         assertThat(observatoryService.skyMap(alice).scheduledWork().toMinutes()).isEqualTo(60);
+    }
+
+    @Test
+    void skyMapRendersSelectedDayTimelineWithScheduledStars() throws Exception {
+        Star star = saveStar(alice, "Visible Scheduled Star", null);
+        star.setScheduledStart(LocalDate.now().atTime(9, 0));
+        star.setScheduledEnd(LocalDate.now().atTime(10, 0));
+        starRepository.saveAndFlush(star);
+
+        mockMvc.perform(get("/observatory/sky-map")
+                        .param("day", LocalDate.now().toString())
+                        .with(user("alice").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Day Timeline")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Visible Scheduled Star")));
+    }
+
+    @Test
+    void scheduledStarCreatedThroughFormAppearsInSkyMap() throws Exception {
+        LocalDate today = LocalDate.now();
+
+        mockMvc.perform(post("/observatory/stars")
+                        .with(user("alice").roles("USER"))
+                        .with(csrf())
+                        .param("title", "Form Scheduled Star")
+                        .param("status", "READY")
+                        .param("priority", "MEDIUM")
+                        .param("scheduledStart", today + "T13:00")
+                        .param("scheduledEnd", today + "T14:00"))
+                .andExpect(status().is3xxRedirection());
+
+        mockMvc.perform(get("/observatory/sky-map")
+                        .param("day", today.toString())
+                        .with(user("alice").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Form Scheduled Star")));
     }
 
     @Test

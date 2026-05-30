@@ -24,9 +24,14 @@
         <label>Description <textarea th:field="*{description}"></textarea></label>
         <label>Type <select th:field="*{type}"><option th:each="type : ${types}" th:value="${type}" th:text="${type}"></option></select></label>
         <label>Date <input type="date" th:field="*{date}" required></label>
-        <label>Start <input type="time" lang="en-GB" th:field="*{startTime}"></label>
-        <label>End <input type="time" lang="en-GB" th:field="*{endTime}"></label>
-        <label>Remind at <input type="datetime-local" lang="en-GB" th:field="*{remindAt}"></label>
+        <label>Start <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" th:attr="pattern=${twelveHourClock} ? null : '[0-2][0-9]:[0-5][0-9]', inputmode=${twelveHourClock} ? null : 'numeric'" placeholder="HH:mm" lang="en-GB" th:field="*{startTime}"></label>
+        <label>End <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" th:attr="pattern=${twelveHourClock} ? null : '[0-2][0-9]:[0-5][0-9]', inputmode=${twelveHourClock} ? null : 'numeric'" placeholder="HH:mm" lang="en-GB" th:field="*{endTime}"></label>
+        <label th:if="${twelveHourClock}">Remind at <input type="datetime-local" lang="en-GB" th:field="*{remindAt}"></label>
+        <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
+            <label>Reminder date <input class="observatory-date-entry" type="date" th:value="${comet.remindAt != null ? #temporals.format(comet.remindAt, 'yyyy-MM-dd') : ''}"></label>
+            <label>Reminder time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${comet.remindAt != null ? #temporals.format(comet.remindAt, 'HH:mm') : ''}"></label>
+            <input type="hidden" th:field="*{remindAt}">
+        </div>
         <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
         <label>Related Star System
             <select name="starSystemId">

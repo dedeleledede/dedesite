@@ -128,6 +128,29 @@ public class ObservatoryService {
         return windows;
     }
 
+    public List<TimelineBlock> timelineForDay(User user, LocalDate date) {
+        List<TimelineBlock> blocks = new ArrayList<>();
+        orbitRepository.findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, date.getDayOfWeek()).forEach(orbit -> {
+            if (orbit.getStartTime() != null && orbit.getEndTime() != null) {
+                blocks.add(new TimelineBlock(date.atTime(orbit.getStartTime()), date.atTime(orbit.getEndTime()), "Orbit", orbit.getTitle()));
+            }
+        });
+        starRepository.findByUserAndScheduledStartBetweenOrderByScheduledStartAsc(user, date.atStartOfDay(), date.plusDays(1).atStartOfDay()).forEach(star -> {
+            if (star.getScheduledStart() != null && star.getScheduledEnd() != null) {
+                blocks.add(new TimelineBlock(star.getScheduledStart(), star.getScheduledEnd(), "Star", star.getTitle()));
+            }
+        });
+        cometRepository.findByUserAndDateOrderByStartTimeAsc(user, date).forEach(comet -> {
+            if (comet.getStartTime() != null && comet.getEndTime() != null) {
+                blocks.add(new TimelineBlock(date.atTime(comet.getStartTime()), date.atTime(comet.getEndTime()), "Comet", comet.getTitle()));
+            }
+        });
+        launchWindowsForDay(user, date).forEach(window ->
+                blocks.add(new TimelineBlock(window.start(), window.end(), "Launch Window", "available")));
+        blocks.sort(Comparator.comparing(TimelineBlock::start).thenComparing(TimelineBlock::end));
+        return blocks;
+    }
+
     public boolean isSupernova(Star star) {
         if (star.getPriority() == Star.Priority.CRITICAL) {
             return true;
@@ -204,6 +227,8 @@ public class ObservatoryService {
             return duration().toMinutes();
         }
     }
+
+    public record TimelineBlock(LocalDateTime start, LocalDateTime end, String type, String title) {}
 
     public record SkyDay(LocalDate date, List<Orbit> orbits, List<Star> stars, List<Comet> comets, List<LaunchWindow> launchWindows) {}
 

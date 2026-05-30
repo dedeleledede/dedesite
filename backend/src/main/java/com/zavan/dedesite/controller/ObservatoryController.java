@@ -38,6 +38,7 @@ public class ObservatoryController {
     public String skyMap(@AuthenticationPrincipal UserDetails userDetails,
                          @RequestParam(defaultValue = "24") String timeFormat,
                          @RequestParam(required = false) LocalDate week,
+                         @RequestParam(required = false) LocalDate day,
                          Model model) {
         User user = currentUserService.requireUser(userDetails);
         addClockModel(model, timeFormat);
@@ -46,6 +47,10 @@ public class ObservatoryController {
         model.addAttribute("skyMap", skyMap);
         model.addAttribute("previousWeek", skyMap.weekStart().minusWeeks(1));
         model.addAttribute("nextWeek", skyMap.weekStart().plusWeeks(1));
+        if (day != null) {
+            model.addAttribute("selectedDay", day);
+            model.addAttribute("dayTimeline", observatoryService.timelineForDay(user, day));
+        }
         return "observatory/sky-map";
     }
 

@@ -12,16 +12,24 @@
     </div>
     <nav class="observatory-tabs" aria-label="Observatory sections">
         <a th:href="@{/observatory}">Mission Control</a>
-        <a th:href="@{/observatory/sky-map(week=${skyMap.weekStart},timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
-        <a th:href="@{/observatory/sky-map(week=${previousWeek})}">Previous Week</a>
-        <a th:href="@{/observatory/sky-map}">This Week</a>
-        <a th:href="@{/observatory/sky-map(week=${nextWeek})}">Next Week</a>
         <a th:href="@{/observatory/orbits}">Orbits</a>
         <a th:href="@{/observatory/stars}">Stars</a>
         <a th:href="@{/observatory/comets}">Comets</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
         <a th:href="@{/observatory/search}">Search</a>
     </nav>
+    <div class="sky-controls">
+        <div class="sky-control-group" aria-label="Clock format">
+            <span>Clock</span>
+            <a class="button" th:href="@{/observatory/sky-map(week=${skyMap.weekStart},timeFormat=${timeFormatToggle})}" th:text="${timeFormat}">24h</a>
+        </div>
+        <div class="sky-control-group" aria-label="Week navigation">
+            <span>Week</span>
+            <a class="button" th:href="@{/observatory/sky-map(week=${previousWeek},timeFormat=${twelveHourClock ? '12' : '24'})}">Previous</a>
+            <a class="button" th:href="@{/observatory/sky-map(timeFormat=${twelveHourClock ? '12' : '24'})}">Current</a>
+            <a class="button" th:href="@{/observatory/sky-map(week=${nextWeek},timeFormat=${twelveHourClock ? '12' : '24'})}">Next</a>
+        </div>
+    </div>
 
     <div class="sky-warning" th:if="${skyMap.overloaded}">
         Your Sky Map is overloaded this week.
@@ -46,8 +54,10 @@
             <tbody>
             <tr th:each="day : ${skyMap.days}">
                 <th scope="row">
-                    <span th:text="${day.date.dayOfWeek}">MONDAY</span>
-                    <small th:text="${day.date}">date</small>
+                    <a class="sky-day-link" th:href="@{/observatory/sky-map(week=${skyMap.weekStart},day=${day.date},timeFormat=${twelveHourClock ? '12' : '24'})}">
+                        <span th:text="${day.date.dayOfWeek}">MONDAY</span>
+                        <small th:text="${day.date}">date</small>
+                    </a>
                 </th>
                 <td>
                     <span class="empty-state" th:if="${#lists.isEmpty(day.orbits)}">clear</span>
@@ -81,6 +91,23 @@
             </tbody>
         </table>
     </div>
+    <section class="sky-day-detail" th:if="${selectedDay != null}">
+        <div class="sky-day-detail-heading">
+            <div>
+                <p class="observatory-kicker">Day Timeline</p>
+                <h2 th:text="|${selectedDay.dayOfWeek} ${selectedDay}|">MONDAY</h2>
+            </div>
+            <a class="button" th:href="@{/observatory/sky-map(week=${skyMap.weekStart},timeFormat=${twelveHourClock ? '12' : '24'})}">Close</a>
+        </div>
+        <p class="empty-state" th:if="${#lists.isEmpty(dayTimeline)}">No timed blocks for this day.</p>
+        <div class="sky-day-timeline">
+            <article class="sky-timeline-block" th:each="block : ${dayTimeline}">
+                <strong th:text="${observatoryService.formatRange(block.start, block.end, twelveHourClock)}">00:00 - 12:00</strong>
+                <span th:text="${block.type}">Orbit</span>
+                <em th:text="${block.title}">Sleep</em>
+            </article>
+        </div>
+    </section>
 </section>
 </body>
 </html>

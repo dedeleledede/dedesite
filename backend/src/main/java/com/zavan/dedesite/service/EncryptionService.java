@@ -9,11 +9,14 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EncryptionService {
+    private static final Logger log = LoggerFactory.getLogger(EncryptionService.class);
     private static final String PREFIX = "v1:";
     private static final int IV_BYTES = 12;
     private static final int TAG_BITS = 128;
@@ -28,10 +31,12 @@ public class EncryptionService {
     @PostConstruct
     void initialize() {
         if (configuredKey == null || configuredKey.isBlank()) {
+            log.warn("Observatory encryption key is not configured. Encrypted Observatory fields cannot be saved or decrypted.");
             return;
         }
         key = new SecretKeySpec(normalizeKey(configuredKey), "AES");
         instance = this;
+        log.info("Observatory encryption key configured. User-written Observatory fields will be encrypted.");
     }
 
     public static String encryptForJpa(String plaintext) {

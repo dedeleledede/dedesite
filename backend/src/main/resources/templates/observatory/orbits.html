@@ -29,8 +29,8 @@
                 <span th:text="${day}">MONDAY</span>
             </label>
         </fieldset>
-        <label>Start <input type="time" lang="en-GB" th:field="*{startTime}" required></label>
-        <label>End <input type="time" lang="en-GB" th:field="*{endTime}" required></label>
+        <label>Start <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" th:attr="pattern=${twelveHourClock} ? null : '[0-2][0-9]:[0-5][0-9]', inputmode=${twelveHourClock} ? null : 'numeric'" placeholder="HH:mm" lang="en-GB" th:field="*{startTime}" required></label>
+        <label>End <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" th:attr="pattern=${twelveHourClock} ? null : '[0-2][0-9]:[0-5][0-9]', inputmode=${twelveHourClock} ? null : 'numeric'" placeholder="HH:mm" lang="en-GB" th:field="*{endTime}" required></label>
         <label>Category <select th:field="*{category}"><option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option></select></label>
         <label>Color Key <input th:field="*{colorKey}" placeholder="violet"></label>
         <label class="check-row"><input type="checkbox" th:field="*{active}"> active Orbit</label>

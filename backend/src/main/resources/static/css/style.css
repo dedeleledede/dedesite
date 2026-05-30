@@ -2677,6 +2677,30 @@ article,
     overflow-x: auto;
 }
 
+.sky-controls,
+.sky-control-group,
+.sky-day-detail-heading {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.sky-controls {
+    justify-content: space-between;
+}
+
+.sky-control-group {
+    border: 1px solid rgba(244, 238, 223, 0.35);
+    padding: 0.45rem;
+}
+
+.sky-control-group span {
+    color: var(--paper-dirty);
+    font-family: var(--font-ui);
+    text-transform: uppercase;
+}
+
 .sky-week-table {
     border-collapse: collapse;
     color: var(--paper);
@@ -2704,6 +2728,16 @@ article,
     width: 9rem;
 }
 
+.sky-day-link {
+    color: var(--paper);
+    display: block;
+    text-decoration: none;
+}
+
+.sky-day-link:hover {
+    color: var(--paper-dirty);
+}
+
 .sky-week-table small {
     color: var(--obs-dim);
     display: block;
@@ -2726,6 +2760,49 @@ article,
     font-family: var(--font-ui);
 }
 
+.sky-day-detail {
+    border: 2px solid rgba(244, 238, 223, 0.55);
+    padding: 0.8rem;
+}
+
+.sky-day-detail-heading {
+    justify-content: space-between;
+}
+
+.sky-day-detail h2 {
+    margin: 0;
+}
+
+.sky-day-timeline {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 0.7rem;
+}
+
+.sky-timeline-block {
+    align-items: baseline;
+    border-bottom: 1px solid rgba(244, 238, 223, 0.24);
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: minmax(8.5rem, auto) minmax(6.5rem, auto) 1fr;
+    padding: 0.45rem 0;
+}
+
+.sky-timeline-block strong,
+.sky-timeline-block span,
+.sky-timeline-block em {
+    font-family: var(--font-ui);
+}
+
+.sky-timeline-block span {
+    color: var(--paper-dirty);
+    text-transform: uppercase;
+}
+
+.observatory-datetime-parts {
+    display: contents;
+}
+
 .sky-lane,
 .sky-map-grid,
 .orbit-block,
@@ -2738,5 +2815,10 @@ article,
 @media (max-width: 720px) {
     .sky-week-table {
         min-width: 760px;
+    }
+
+    .sky-timeline-block {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
     }
 }

@@ -14,6 +14,7 @@
         <a th:href="@{/observatory}">Mission Control</a>
         <a th:href="@{/observatory/stars}">all</a>
         <a th:each="status : ${statuses}" th:href="@{/observatory/stars(status=${status})}" th:text="${status}">READY</a>
+        <a th:href="@{/observatory/stars(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
     </nav>
 
@@ -32,8 +33,18 @@
         <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
         <label>Due date <input type="date" th:field="*{dueDate}"></label>
         <label>Estimated minutes <input type="number" min="0" th:field="*{estimatedMinutes}"></label>
-        <label>Scheduled start <input type="datetime-local" lang="en-GB" th:field="*{scheduledStart}"></label>
-        <label>Scheduled end <input type="datetime-local" lang="en-GB" th:field="*{scheduledEnd}"></label>
+        <label th:if="${twelveHourClock}">Scheduled start <input type="datetime-local" lang="en-GB" th:field="*{scheduledStart}"></label>
+        <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
+            <label>Scheduled start date <input class="observatory-date-entry" type="date" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'yyyy-MM-dd') : ''}"></label>
+            <label>Scheduled start time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'HH:mm') : ''}"></label>
+            <input type="hidden" th:field="*{scheduledStart}">
+        </div>
+        <label th:if="${twelveHourClock}">Scheduled end <input type="datetime-local" lang="en-GB" th:field="*{scheduledEnd}"></label>
+        <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
+            <label>Scheduled end date <input class="observatory-date-entry" type="date" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'yyyy-MM-dd') : ''}"></label>
+            <label>Scheduled end time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'HH:mm') : ''}"></label>
+            <input type="hidden" th:field="*{scheduledEnd}">
+        </div>
         <button class="button primary" type="submit" th:text="${editId == null} ? 'Add Star' : 'Save Star'">Add Star</button>
     </form>
 
