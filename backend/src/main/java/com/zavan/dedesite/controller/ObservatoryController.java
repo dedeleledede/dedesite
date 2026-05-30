@@ -3,6 +3,7 @@ package com.zavan.dedesite.controller;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.service.CurrentUserService;
 import com.zavan.dedesite.service.ObservatoryService;
+import java.time.LocalDate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -36,11 +37,15 @@ public class ObservatoryController {
     @GetMapping("/sky-map")
     public String skyMap(@AuthenticationPrincipal UserDetails userDetails,
                          @RequestParam(defaultValue = "24") String timeFormat,
+                         @RequestParam(required = false) LocalDate week,
                          Model model) {
         User user = currentUserService.requireUser(userDetails);
         addClockModel(model, timeFormat);
         model.addAttribute("observatoryService", observatoryService);
-        model.addAttribute("skyMap", observatoryService.skyMap(user));
+        var skyMap = observatoryService.skyMap(user, week == null ? LocalDate.now() : week);
+        model.addAttribute("skyMap", skyMap);
+        model.addAttribute("previousWeek", skyMap.weekStart().minusWeeks(1));
+        model.addAttribute("nextWeek", skyMap.weekStart().plusWeeks(1));
         return "observatory/sky-map";
     }
 

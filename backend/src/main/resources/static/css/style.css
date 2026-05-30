@@ -1917,7 +1917,6 @@ article,
     border: 2px solid var(--paper);
     background:
             linear-gradient(135deg, transparent 0 58%, rgba(179, 19, 18, 0.42) 58% 64%, transparent 64%),
-            linear-gradient(90deg, rgba(215, 255, 63, 0.12), transparent 34%),
             rgba(8, 8, 8, 0.9);
     padding: clamp(1rem, 4vw, 2rem);
     color: var(--paper);
@@ -2343,7 +2342,7 @@ article,
 .observatory-form,
 .observatory-panel,
 .observatory-row,
-.constellation-card,
+.starSystem-card,
 .sky-day {
     background: rgba(8, 8, 18, 0.78);
     border: 2px solid var(--obs-cold);
@@ -2376,7 +2375,7 @@ article,
 }
 
 .observatory-panel,
-.constellation-card,
+.starSystem-card,
 .sky-day {
     padding: 1rem;
 }
@@ -2469,14 +2468,14 @@ article,
 }
 
 .observatory-table,
-.constellation-board,
+.starSystem-board,
 .sky-map-grid {
     display: grid;
     gap: 1rem;
     margin-top: 1rem;
 }
 
-.constellation-board,
+.starSystem-board,
 .sky-map-grid {
     grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
 }
@@ -2500,7 +2499,7 @@ article,
     margin: 0;
 }
 
-.constellation-card h2 a {
+.starSystem-card h2 a {
     color: var(--obs-ink);
 }
 
@@ -2557,10 +2556,6 @@ article,
 
 /* OBSERVATORY TUNING */
 
-nav:not(.poster-directory) a[href="/projects"] {
-    background: var(--paper);
-}
-
 .observatory-page {
     --obs-bg: #0b0b0d;
     --obs-ink: var(--paper);
@@ -2605,7 +2600,7 @@ nav:not(.poster-directory) a[href="/projects"] {
 }
 
 .observatory-hero h1 {
-    text-shadow: 3px 3px 0 #000, -2px 2px 0 var(--blood);
+    text-shadow: none;
 }
 
 .observatory-tabs a,
@@ -2631,7 +2626,7 @@ nav:not(.poster-directory) a[href="/projects"] {
 .observatory-form,
 .observatory-panel,
 .observatory-row,
-.constellation-card,
+.starSystem-card,
 .sky-day {
     background: rgba(8, 8, 8, 0.86);
     border-color: rgba(244, 238, 223, 0.55);
@@ -2653,7 +2648,7 @@ nav:not(.poster-directory) a[href="/projects"] {
     border-color: var(--blood);
 }
 
-.constellation-card-topline {
+.starSystem-card-topline {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;

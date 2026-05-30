@@ -5,6 +5,7 @@ import com.zavan.dedesite.model.Pulsar;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.repository.PulsarRepository;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,14 +33,19 @@ public class PulsarService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    public Pulsar getOwned(UUID publicId, User user) {
+        return pulsarRepository.findByPublicIdAndUser(publicId, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
     public Pulsar save(Pulsar pulsar, Long relatedExamId, User user) {
         pulsar.setUser(user);
         pulsar.setRelatedExam(resolveExam(relatedExamId, user));
         return pulsarRepository.save(pulsar);
     }
 
-    public void update(Long id, Pulsar form, Long relatedExamId, User user) {
-        Pulsar pulsar = getOwned(id, user);
+    public void update(UUID publicId, Pulsar form, Long relatedExamId, User user) {
+        Pulsar pulsar = getOwned(publicId, user);
         pulsar.setTitle(form.getTitle());
         pulsar.setSubject(form.getSubject());
         pulsar.setFrequency(form.getFrequency());
@@ -49,14 +55,14 @@ public class PulsarService {
         pulsarRepository.save(pulsar);
     }
 
-    public void toggle(Long id, User user) {
-        Pulsar pulsar = getOwned(id, user);
+    public void toggle(UUID publicId, User user) {
+        Pulsar pulsar = getOwned(publicId, user);
         pulsar.setActive(!pulsar.isActive());
         pulsarRepository.save(pulsar);
     }
 
-    public void delete(Long id, User user) {
-        pulsarRepository.delete(getOwned(id, user));
+    public void delete(UUID publicId, User user) {
+        pulsarRepository.delete(getOwned(publicId, user));
     }
 
     private Comet resolveExam(Long relatedExamId, User user) {

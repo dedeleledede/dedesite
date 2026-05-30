@@ -17,7 +17,7 @@
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
     </nav>
 
-    <form class="observatory-form" th:action="${editId == null} ? @{/observatory/orbits} : @{/observatory/orbits/{id}(id=${editId})}" th:object="${orbit}" method="post">
+    <form class="observatory-form" th:action="${editId == null} ? @{/observatory/orbits} : @{/observatory/orbits/{publicId}(publicId=${editId})}" th:object="${orbit}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <h2 th:text="${editId == null} ? 'Add Orbit' : 'Edit Orbit'">Add Orbit</h2>
         <label>Title <input th:field="*{title}" required></label>
@@ -45,9 +45,9 @@
                 <em th:text="${orbit.active} ? 'active' : 'inactive'">active</em>
             </div>
             <div class="row-actions">
-                <a class="button" th:href="@{/observatory/orbits/{id}/edit(id=${orbit.id})}">Edit</a>
-                <form th:action="@{/observatory/orbits/{id}/toggle(id=${orbit.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Toggle</button></form>
-                <form th:action="@{/observatory/orbits/{id}/delete(id=${orbit.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Delete</button></form>
+                <a class="button" th:href="@{/observatory/orbits/{publicId}/edit(publicId=${orbit.publicId})}">Edit</a>
+                <form th:action="@{/observatory/orbits/{publicId}/toggle(publicId=${orbit.publicId})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Toggle</button></form>
+                <form th:action="@{/observatory/orbits/{publicId}/delete(publicId=${orbit.publicId})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Delete</button></form>
             </div>
         </article>
     </div>

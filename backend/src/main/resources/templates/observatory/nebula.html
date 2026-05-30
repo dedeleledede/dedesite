@@ -16,11 +16,11 @@
         <article class="observatory-row" th:each="star : ${stars}">
             <div>
                 <strong th:text="${star.title}">Star</strong>
-                <span th:text="${star.constellation != null ? star.constellation.name : 'unassigned'}">Constellation</span>
+                <span th:text="${star.starSystem != null ? star.starSystem.name : 'unassigned'}">Star System</span>
                 <em th:text="${star.priority}">MEDIUM</em>
             </div>
             <div class="row-actions">
-                <a class="button" th:href="@{/observatory/stars/{id}/edit(id=${star.id})}">Edit</a>
+                <a class="button" th:href="@{/observatory/stars/{publicId}/edit(publicId=${star.publicId})}">Edit</a>
             </div>
         </article>
     </div>

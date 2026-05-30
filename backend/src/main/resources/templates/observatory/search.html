@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Search - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Search</h1>
+        <p>Search decrypts only your own candidate records in memory.</p>
+    </div>
+    <nav class="observatory-tabs"><a th:href="@{/observatory}">Mission Control</a><a th:href="@{/observatory/star-systems}">Star Systems</a><a th:href="@{/observatory/stars}">Stars</a><a th:href="@{/observatory/comets}">Comets</a></nav>
+    <form class="observatory-form" th:action="@{/observatory/search}" method="get">
+        <label>Keyword <input name="q" th:value="${query}"></label>
+        <button type="submit">Search</button>
+    </form>
+    <div class="observatory-table">
+        <p class="empty-state" th:if="${#lists.isEmpty(results)}">No matching private records.</p>
+        <article class="observatory-row" th:each="result : ${results}">
+            <div>
+                <strong><a th:href="${result.url}" th:text="${result.title}">Result</a></strong>
+                <span th:text="${result.type}">type</span>
+                <em th:text="${result.description}">description</em>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

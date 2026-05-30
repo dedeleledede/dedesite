@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
+@Table(name = "stars")
 public class Star {
     public enum Status {
         NEBULA, READY, SCHEDULED, IN_PROGRESS, DONE, BLOCKED
@@ -20,18 +21,24 @@ public class Star {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, updatable = false)
+    private java.util.UUID publicId = java.util.UUID.randomUUID();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "constellation_id")
-    private Constellation constellation;
+    @JoinColumn(name = "star_system_id")
+    private StarSystem starSystem;
 
     @NotBlank
+    @Column(name = "encrypted_title", nullable = false)
+    @Convert(converter = EncryptedStringConverter.class)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "encrypted_description", columnDefinition = "TEXT")
+    @Convert(converter = EncryptedStringConverter.class)
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -54,6 +61,7 @@ public class Star {
     private LocalDateTime completedAt;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
+    private Integer encryptionKeyVersion = 1;
 
     @PreUpdate
     public void touch() {
@@ -66,10 +74,12 @@ public class Star {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public java.util.UUID getPublicId() { return publicId; }
+    public void setPublicId(java.util.UUID publicId) { this.publicId = publicId; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-    public Constellation getConstellation() { return constellation; }
-    public void setConstellation(Constellation constellation) { this.constellation = constellation; }
+    public StarSystem getStarSystem() { return starSystem; }
+    public void setStarSystem(StarSystem starSystem) { this.starSystem = starSystem; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
@@ -92,4 +102,6 @@ public class Star {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public Integer getEncryptionKeyVersion() { return encryptionKeyVersion; }
+    public void setEncryptionKeyVersion(Integer encryptionKeyVersion) { this.encryptionKeyVersion = encryptionKeyVersion; }
 }

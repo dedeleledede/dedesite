@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
+@Table(name = "comets")
 public class Comet {
     public enum Type {
         EXAM, DEADLINE, APPOINTMENT, DELIVERY, EVENT, OTHER
@@ -21,14 +22,20 @@ public class Comet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, updatable = false)
+    private java.util.UUID publicId = java.util.UUID.randomUUID();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @NotBlank
+    @Column(name = "encrypted_title", nullable = false)
+    @Convert(converter = EncryptedStringConverter.class)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "encrypted_description", columnDefinition = "TEXT")
+    @Convert(converter = EncryptedStringConverter.class)
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -43,15 +50,19 @@ public class Comet {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime remindAt;
+
     @Enumerated(EnumType.STRING)
     private Priority priority = Priority.MEDIUM;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_constellation_id")
-    private Constellation relatedConstellation;
+    @JoinColumn(name = "related_star_system_id")
+    private StarSystem relatedStarSystem;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
+    private Integer encryptionKeyVersion = 1;
 
     @PreUpdate
     public void touch() {
@@ -60,6 +71,8 @@ public class Comet {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public java.util.UUID getPublicId() { return publicId; }
+    public void setPublicId(java.util.UUID publicId) { this.publicId = publicId; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
     public String getTitle() { return title; }
@@ -74,12 +87,16 @@ public class Comet {
     public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
     public LocalTime getEndTime() { return endTime; }
     public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
+    public LocalDateTime getRemindAt() { return remindAt; }
+    public void setRemindAt(LocalDateTime remindAt) { this.remindAt = remindAt; }
     public Priority getPriority() { return priority; }
     public void setPriority(Priority priority) { this.priority = priority; }
-    public Constellation getRelatedConstellation() { return relatedConstellation; }
-    public void setRelatedConstellation(Constellation relatedConstellation) { this.relatedConstellation = relatedConstellation; }
+    public StarSystem getRelatedStarSystem() { return relatedStarSystem; }
+    public void setRelatedStarSystem(StarSystem relatedStarSystem) { this.relatedStarSystem = relatedStarSystem; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public Integer getEncryptionKeyVersion() { return encryptionKeyVersion; }
+    public void setEncryptionKeyVersion(Integer encryptionKeyVersion) { this.encryptionKeyVersion = encryptionKeyVersion; }
 }

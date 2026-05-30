@@ -8,6 +8,7 @@ import com.zavan.dedesite.service.OrbitService;
 import jakarta.validation.Valid;
 import java.time.DayOfWeek;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -58,19 +59,19 @@ public class OrbitController {
         return "redirect:/observatory/orbits";
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/{publicId}/edit")
     public String edit(@AuthenticationPrincipal UserDetails userDetails,
-                       @PathVariable Long id,
+                       @PathVariable UUID publicId,
                        @RequestParam(defaultValue = "24") String timeFormat,
                        Model model) {
         User user = currentUserService.requireUser(userDetails);
-        fillModel(model, user, orbitService.getOwned(id, user), id, timeFormat);
+        fillModel(model, user, orbitService.getOwned(publicId, user), publicId, timeFormat);
         return "observatory/orbits";
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{publicId}")
     public String update(@AuthenticationPrincipal UserDetails userDetails,
-                         @PathVariable Long id,
+                         @PathVariable UUID publicId,
                          @Valid @ModelAttribute("orbit") Orbit orbit,
                          BindingResult bindingResult,
                          @RequestParam(required = false) List<DayOfWeek> dayOfWeeks,
@@ -78,29 +79,29 @@ public class OrbitController {
                          Model model) {
         User user = currentUserService.requireUser(userDetails);
         if (bindingResult.hasErrors()) {
-            fillModel(model, user, orbit, id, timeFormat);
+            fillModel(model, user, orbit, publicId, timeFormat);
             return "observatory/orbits";
         }
         if (dayOfWeeks != null && !dayOfWeeks.isEmpty()) {
             orbit.setDayOfWeek(dayOfWeeks.getFirst());
         }
-        orbitService.update(id, orbit, user);
+        orbitService.update(publicId, orbit, user);
         return "redirect:/observatory/orbits";
     }
 
-    @PostMapping("/{id}/toggle")
-    public String toggle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
-        orbitService.toggle(id, currentUserService.requireUser(userDetails));
+    @PostMapping("/{publicId}/toggle")
+    public String toggle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID publicId) {
+        orbitService.toggle(publicId, currentUserService.requireUser(userDetails));
         return "redirect:/observatory/orbits";
     }
 
-    @PostMapping("/{id}/delete")
-    public String delete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
-        orbitService.delete(id, currentUserService.requireUser(userDetails));
+    @PostMapping("/{publicId}/delete")
+    public String delete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID publicId) {
+        orbitService.delete(publicId, currentUserService.requireUser(userDetails));
         return "redirect:/observatory/orbits";
     }
 
-    private void fillModel(Model model, User user, Orbit orbit, Long editId, String timeFormat) {
+    private void fillModel(Model model, User user, Orbit orbit, UUID editId, String timeFormat) {
         boolean twelveHourClock = observatoryService.useTwelveHourClock(timeFormat);
         model.addAttribute("orbits", orbitService.findAll(user));
         model.addAttribute("orbit", orbit);

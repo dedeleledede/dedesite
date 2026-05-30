@@ -6,6 +6,7 @@ import com.zavan.dedesite.repository.OrbitRepository;
 import java.time.DayOfWeek;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,6 +32,11 @@ public class OrbitService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    public Orbit getOwned(UUID publicId, User user) {
+        return orbitRepository.findByPublicIdAndUser(publicId, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
     public Orbit save(Orbit orbit, User user) {
         orbit.setUser(user);
         return orbitRepository.save(orbit);
@@ -53,8 +59,8 @@ public class OrbitService {
         }
     }
 
-    public void update(Long id, Orbit form, User user) {
-        Orbit orbit = getOwned(id, user);
+    public void update(UUID publicId, Orbit form, User user) {
+        Orbit orbit = getOwned(publicId, user);
         orbit.setTitle(form.getTitle());
         orbit.setDescription(form.getDescription());
         orbit.setDayOfWeek(form.getDayOfWeek());
@@ -66,13 +72,13 @@ public class OrbitService {
         orbitRepository.save(orbit);
     }
 
-    public void toggle(Long id, User user) {
-        Orbit orbit = getOwned(id, user);
+    public void toggle(UUID publicId, User user) {
+        Orbit orbit = getOwned(publicId, user);
         orbit.setActive(!orbit.isActive());
         orbitRepository.save(orbit);
     }
 
-    public void delete(Long id, User user) {
-        orbitRepository.delete(getOwned(id, user));
+    public void delete(UUID publicId, User user) {
+        orbitRepository.delete(getOwned(publicId, user));
     }
 }

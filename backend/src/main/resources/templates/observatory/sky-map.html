@@ -12,11 +12,15 @@
     </div>
     <nav class="observatory-tabs" aria-label="Observatory sections">
         <a th:href="@{/observatory}">Mission Control</a>
-        <a th:href="@{/observatory/sky-map(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
+        <a th:href="@{/observatory/sky-map(week=${skyMap.weekStart},timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
+        <a th:href="@{/observatory/sky-map(week=${previousWeek})}">Previous Week</a>
+        <a th:href="@{/observatory/sky-map}">This Week</a>
+        <a th:href="@{/observatory/sky-map(week=${nextWeek})}">Next Week</a>
         <a th:href="@{/observatory/orbits}">Orbits</a>
         <a th:href="@{/observatory/stars}">Stars</a>
         <a th:href="@{/observatory/comets}">Comets</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
+        <a th:href="@{/observatory/search}">Search</a>
     </nav>
 
     <div class="sky-warning" th:if="${skyMap.overloaded}">

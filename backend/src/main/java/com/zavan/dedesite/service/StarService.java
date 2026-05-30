@@ -1,12 +1,13 @@
 package com.zavan.dedesite.service;
 
-import com.zavan.dedesite.model.Constellation;
+import com.zavan.dedesite.model.StarSystem;
 import com.zavan.dedesite.model.Star;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.repository.StarRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,11 +15,11 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class StarService {
     private final StarRepository starRepository;
-    private final ConstellationService constellationService;
+    private final StarSystemService starSystemService;
 
-    public StarService(StarRepository starRepository, ConstellationService constellationService) {
+    public StarService(StarRepository starRepository, StarSystemService starSystemService) {
         this.starRepository = starRepository;
-        this.constellationService = constellationService;
+        this.starSystemService = starSystemService;
     }
 
     public List<Star> findAll(User user) {
@@ -33,16 +34,16 @@ public class StarService {
         return starRepository.findByUserAndStatusNotOrderByDueDateAscCreatedAtDesc(user, Star.Status.DONE);
     }
 
-    public List<Star> findForConstellation(User user, Constellation constellation) {
-        return starRepository.findByUserAndConstellationOrderByStatusAscDueDateAsc(user, constellation);
+    public List<Star> findForStarSystem(User user, StarSystem starSystem) {
+        return starRepository.findByUserAndStarSystemOrderByStatusAscDueDateAsc(user, starSystem);
     }
 
-    public long countOpen(User user, Constellation constellation) {
-        return starRepository.countByUserAndConstellationAndStatusNot(user, constellation, Star.Status.DONE);
+    public long countOpen(User user, StarSystem starSystem) {
+        return starRepository.countByUserAndStarSystemAndStatusNot(user, starSystem, Star.Status.DONE);
     }
 
-    public Optional<Star> nextOpen(User user, Constellation constellation) {
-        return starRepository.findFirstByUserAndConstellationAndStatusNotOrderByDueDateAscCreatedAtAsc(user, constellation, Star.Status.DONE);
+    public Optional<Star> nextOpen(User user, StarSystem starSystem) {
+        return starRepository.findFirstByUserAndStarSystemAndStatusNotOrderByDueDateAscCreatedAtAsc(user, starSystem, Star.Status.DONE);
     }
 
     public Star getOwned(Long id, User user) {
@@ -50,15 +51,20 @@ public class StarService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    public Star save(Star star, Long constellationId, User user) {
+    public Star getOwned(UUID publicId, User user) {
+        return starRepository.findByPublicIdAndUser(publicId, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    public Star save(Star star, Long starSystemId, User user) {
         star.setUser(user);
-        star.setConstellation(resolveConstellation(constellationId, user));
+        star.setStarSystem(resolveStarSystem(starSystemId, user));
         syncStatusFromSchedule(star);
         return starRepository.save(star);
     }
 
-    public void update(Long id, Star form, Long constellationId, User user) {
-        Star star = getOwned(id, user);
+    public void update(UUID publicId, Star form, Long starSystemId, User user) {
+        Star star = getOwned(publicId, user);
         star.setTitle(form.getTitle());
         star.setDescription(form.getDescription());
         star.setStatus(form.getStatus());
@@ -67,7 +73,7 @@ public class StarService {
         star.setEstimatedMinutes(form.getEstimatedMinutes());
         star.setScheduledStart(form.getScheduledStart());
         star.setScheduledEnd(form.getScheduledEnd());
-        star.setConstellation(resolveConstellation(constellationId, user));
+        star.setStarSystem(resolveStarSystem(starSystemId, user));
         if (star.getStatus() == Star.Status.DONE && star.getCompletedAt() == null) {
             star.setCompletedAt(LocalDateTime.now());
         } else if (star.getStatus() != Star.Status.DONE) {
@@ -77,22 +83,22 @@ public class StarService {
         starRepository.save(star);
     }
 
-    public void complete(Long id, User user) {
-        Star star = getOwned(id, user);
+    public void complete(UUID publicId, User user) {
+        Star star = getOwned(publicId, user);
         star.setStatus(Star.Status.DONE);
         star.setCompletedAt(LocalDateTime.now());
         starRepository.save(star);
     }
 
-    public void delete(Long id, User user) {
-        starRepository.delete(getOwned(id, user));
+    public void delete(UUID publicId, User user) {
+        starRepository.delete(getOwned(publicId, user));
     }
 
-    private Constellation resolveConstellation(Long constellationId, User user) {
-        if (constellationId == null) {
+    private StarSystem resolveStarSystem(Long starSystemId, User user) {
+        if (starSystemId == null) {
             return null;
         }
-        return constellationService.getOwned(constellationId, user);
+        return starSystemService.getOwned(starSystemId, user);
     }
 
     private void syncStatusFromSchedule(Star star) {

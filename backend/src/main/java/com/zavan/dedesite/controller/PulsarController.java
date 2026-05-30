@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/observatory/pulsars")
@@ -53,42 +54,42 @@ public class PulsarController {
         return "redirect:/observatory/pulsars";
     }
 
-    @GetMapping("/{id}/edit")
-    public String edit(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, Model model) {
+    @GetMapping("/{publicId}/edit")
+    public String edit(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID publicId, Model model) {
         User user = currentUserService.requireUser(userDetails);
-        fillModel(model, user, pulsarService.getOwned(id, user), id);
+        fillModel(model, user, pulsarService.getOwned(publicId, user), publicId);
         return "observatory/pulsars";
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{publicId}")
     public String update(@AuthenticationPrincipal UserDetails userDetails,
-                         @PathVariable Long id,
+                         @PathVariable UUID publicId,
                          @Valid @ModelAttribute("pulsar") Pulsar pulsar,
                          BindingResult bindingResult,
                          @RequestParam(required = false) Long relatedExamId,
                          Model model) {
         User user = currentUserService.requireUser(userDetails);
         if (bindingResult.hasErrors()) {
-            fillModel(model, user, pulsar, id);
+            fillModel(model, user, pulsar, publicId);
             return "observatory/pulsars";
         }
-        pulsarService.update(id, pulsar, relatedExamId, user);
+        pulsarService.update(publicId, pulsar, relatedExamId, user);
         return "redirect:/observatory/pulsars";
     }
 
-    @PostMapping("/{id}/toggle")
-    public String toggle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
-        pulsarService.toggle(id, currentUserService.requireUser(userDetails));
+    @PostMapping("/{publicId}/toggle")
+    public String toggle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID publicId) {
+        pulsarService.toggle(publicId, currentUserService.requireUser(userDetails));
         return "redirect:/observatory/pulsars";
     }
 
-    @PostMapping("/{id}/delete")
-    public String delete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
-        pulsarService.delete(id, currentUserService.requireUser(userDetails));
+    @PostMapping("/{publicId}/delete")
+    public String delete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID publicId) {
+        pulsarService.delete(publicId, currentUserService.requireUser(userDetails));
         return "redirect:/observatory/pulsars";
     }
 
-    private void fillModel(Model model, User user, Pulsar pulsar, Long editId) {
+    private void fillModel(Model model, User user, Pulsar pulsar, UUID editId) {
         model.addAttribute("pulsars", pulsarService.findAll(user));
         model.addAttribute("pulsar", pulsar);
         model.addAttribute("editId", editId);

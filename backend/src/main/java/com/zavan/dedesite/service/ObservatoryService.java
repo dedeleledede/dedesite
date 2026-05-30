@@ -62,7 +62,11 @@ public class ObservatoryService {
     }
 
     public SkyMap skyMap(User user) {
-        LocalDate weekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        return skyMap(user, LocalDate.now());
+    }
+
+    public SkyMap skyMap(User user, LocalDate anchorDate) {
+        LocalDate weekStart = anchorDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate weekEnd = weekStart.plusDays(6);
         List<SkyDay> days = new ArrayList<>();
         Duration totalLaunchWindow = Duration.ZERO;
@@ -177,7 +181,7 @@ public class ObservatoryService {
 
     public String formatLaunchWindow(LaunchWindow window, LocalDate day, boolean twelveHourClock) {
         String end = window.end().equals(day.plusDays(1).atStartOfDay())
-                ? (twelveHourClock ? "12:00 AM" : "24:00")
+                ? (twelveHourClock ? "next 12:00 AM" : "24:00")
                 : formatTime(window.end(), twelveHourClock);
         return formatTime(window.start(), twelveHourClock) + " - " + end;
     }

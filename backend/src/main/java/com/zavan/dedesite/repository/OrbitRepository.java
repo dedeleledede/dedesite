@@ -5,6 +5,7 @@ import com.zavan.dedesite.model.User;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrbitRepository extends JpaRepository<Orbit, Long> {
@@ -12,4 +13,5 @@ public interface OrbitRepository extends JpaRepository<Orbit, Long> {
     List<Orbit> findByUserAndActiveTrueOrderByDayOfWeekAscStartTimeAsc(User user);
     List<Orbit> findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(User user, DayOfWeek dayOfWeek);
     Optional<Orbit> findByIdAndUser(Long id, User user);
+    Optional<Orbit> findByPublicIdAndUser(UUID publicId, User user);
 }

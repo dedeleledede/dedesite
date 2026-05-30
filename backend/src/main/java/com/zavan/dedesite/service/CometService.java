@@ -1,11 +1,13 @@
 package com.zavan.dedesite.service;
 
 import com.zavan.dedesite.model.Comet;
-import com.zavan.dedesite.model.Constellation;
+import com.zavan.dedesite.model.StarSystem;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.repository.CometRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,11 +15,11 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class CometService {
     private final CometRepository cometRepository;
-    private final ConstellationService constellationService;
+    private final StarSystemService starSystemService;
 
-    public CometService(CometRepository cometRepository, ConstellationService constellationService) {
+    public CometService(CometRepository cometRepository, StarSystemService starSystemService) {
         this.cometRepository = cometRepository;
-        this.constellationService = constellationService;
+        this.starSystemService = starSystemService;
     }
 
     public List<Comet> findAll(User user) {
@@ -28,8 +30,12 @@ public class CometService {
         return cometRepository.findByUserAndDateGreaterThanEqualOrderByDateAscStartTimeAsc(user, LocalDate.now());
     }
 
-    public List<Comet> findForConstellation(User user, Constellation constellation) {
-        return cometRepository.findByUserAndRelatedConstellationOrderByDateAscStartTimeAsc(user, constellation);
+    public List<Comet> findForStarSystem(User user, StarSystem starSystem) {
+        return cometRepository.findByUserAndRelatedStarSystemOrderByDateAscStartTimeAsc(user, starSystem);
+    }
+
+    public List<Comet> remindersDue(User user, LocalDateTime now) {
+        return cometRepository.findByUserAndRemindAtLessThanEqualOrderByRemindAtAsc(user, now);
     }
 
     public Comet getOwned(Long id, User user) {
@@ -37,33 +43,39 @@ public class CometService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    public Comet save(Comet comet, Long constellationId, User user) {
+    public Comet getOwned(UUID publicId, User user) {
+        return cometRepository.findByPublicIdAndUser(publicId, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    public Comet save(Comet comet, Long starSystemId, User user) {
         comet.setUser(user);
-        comet.setRelatedConstellation(resolveConstellation(constellationId, user));
+        comet.setRelatedStarSystem(resolveStarSystem(starSystemId, user));
         return cometRepository.save(comet);
     }
 
-    public void update(Long id, Comet form, Long constellationId, User user) {
-        Comet comet = getOwned(id, user);
+    public void update(UUID publicId, Comet form, Long starSystemId, User user) {
+        Comet comet = getOwned(publicId, user);
         comet.setTitle(form.getTitle());
         comet.setDescription(form.getDescription());
         comet.setType(form.getType());
         comet.setDate(form.getDate());
         comet.setStartTime(form.getStartTime());
         comet.setEndTime(form.getEndTime());
+        comet.setRemindAt(form.getRemindAt());
         comet.setPriority(form.getPriority());
-        comet.setRelatedConstellation(resolveConstellation(constellationId, user));
+        comet.setRelatedStarSystem(resolveStarSystem(starSystemId, user));
         cometRepository.save(comet);
     }
 
-    public void delete(Long id, User user) {
-        cometRepository.delete(getOwned(id, user));
+    public void delete(UUID publicId, User user) {
+        cometRepository.delete(getOwned(publicId, user));
     }
 
-    private Constellation resolveConstellation(Long constellationId, User user) {
-        if (constellationId == null) {
+    private StarSystem resolveStarSystem(Long starSystemId, User user) {
+        if (starSystemId == null) {
             return null;
         }
-        return constellationService.getOwned(constellationId, user);
+        return starSystemService.getOwned(starSystemId, user);
     }
 }

@@ -16,6 +16,11 @@ public class SocialMetaAdvice {
         return "dedesite";
     }
 
+    @ModelAttribute("siteTitle")
+    public String siteTitle() {
+        return siteName();
+    }
+
     @ModelAttribute("siteDescription")
     public String siteDescription() {
         return "Esther's personal website: blog, projects, guestbook, music notes, experiments, and site machinery.";

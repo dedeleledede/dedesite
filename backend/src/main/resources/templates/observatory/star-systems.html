@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Star Systems - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Star Systems</h1>
+        <p>projects, responsibilities, and active bodies of work.</p>
+    </div>
+    <nav class="observatory-tabs"><a th:href="@{/observatory}">Mission Control</a><a th:href="@{/observatory/stars}">Stars</a><a th:href="@{/observatory/comets}">Comets</a><a th:href="@{/observatory/pulsars}">Pulsars</a></nav>
+
+    <form class="observatory-form" th:action="${editId == null} ? @{/observatory/star-systems} : @{/observatory/star-systems/{publicId}(publicId=${editId})}" th:object="${starSystem}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <h2 th:text="${editId == null} ? 'Create Star System' : 'Edit Star System'">Create Star System</h2>
+        <label>Name <input th:field="*{name}" required></label>
+        <label>Description <textarea th:field="*{description}"></textarea></label>
+        <label>Status <select th:field="*{status}"><option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option></select></label>
+        <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
+        <label>Estimated weekly hours <input type="number" step="0.5" min="0" th:field="*{estimatedWeeklyHours}"></label>
+        <label>Deadline <input type="date" th:field="*{deadline}"></label>
+        <label>Energy <select th:field="*{energyType}"><option th:each="energyType : ${energyTypes}" th:value="${energyType}" th:text="${energyType}"></option></select></label>
+        <button class="button primary" type="submit" th:text="${editId == null} ? 'Create Star System' : 'Save Star System'">Create Star System</button>
+    </form>
+
+    <div class="starSystem-board">
+        <article class="starSystem-card" th:each="starSystem : ${starSystems}">
+            <div class="starSystem-card-topline">
+                <span th:text="${starSystem.status}">ACTIVE</span>
+                <span th:text="${starSystem.priority}">HIGH</span>
+            </div>
+            <h2><a th:href="@{/observatory/star-systems/{publicId}(publicId=${starSystem.publicId})}" th:text="${starSystem.name}">dedesite</a></h2>
+            <p th:text="${starSystem.description}">description</p>
+            <div class="project-tags">
+                <span th:text="|weekly ${starSystem.estimatedWeeklyHours ?: 0}h|">weekly</span>
+                <span th:text="${starSystem.deadline != null ? 'deadline ' + starSystem.deadline : 'no deadline'}">deadline</span>
+                <span th:text="|open Stars ${openStarCounts[starSystem.id]}|">open</span>
+            </div>
+            <div class="next-star">
+                <span>next Star</span>
+                <strong th:text="${nextStars[starSystem.id]}">none</strong>
+            </div>
+            <div class="row-actions">
+                <a class="button" th:href="@{/observatory/star-systems/{publicId}/edit(publicId=${starSystem.publicId})}">Edit</a>
+                <form th:action="@{/observatory/star-systems/{publicId}/archive(publicId=${starSystem.publicId})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Archive</button></form>
+                <form th:action="@{/observatory/star-systems/{publicId}/delete(publicId=${starSystem.publicId})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit">Delete</button></form>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

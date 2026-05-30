@@ -7,8 +7,11 @@ import com.zavan.dedesite.service.ImageUploadService;
 import com.zavan.dedesite.service.PostService;
 import com.zavan.dedesite.service.UserService;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +32,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 @RequestMapping("/blog")
 public class BlogController {
+    private static final Pattern FIRST_IMAGE = Pattern.compile("<img[^>]+src=[\"']([^\"']+)[\"']", Pattern.CASE_INSENSITIVE);
 
     @Autowired
     private PostService postService;
@@ -38,6 +42,9 @@ public class BlogController {
 
     @Autowired
     private ImageUploadService imageUploadService;
+
+    @Value("${app.public-url:http://localhost:6969}")
+    private String publicUrl;
 
     @GetMapping
     public String showBlog(@RequestParam(defaultValue = "0") int page, Model model) {
@@ -55,6 +62,9 @@ public class BlogController {
         Post post = postService.getPostById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("post", post);
+        model.addAttribute("siteTitle", post.getTitle() + " - dedesite");
+        model.addAttribute("siteDescription", summarizePost(post));
+        firstImage(post).ifPresent(image -> model.addAttribute("siteImage", absoluteUrl(image)));
         return "post";
     }
 
@@ -97,5 +107,34 @@ public class BlogController {
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, String> uploadPostImageData(@org.springframework.web.bind.annotation.RequestBody Map<String, String> payload) throws IOException {
         return imageUploadService.uploadBlogImageData(payload.get("dataUrl"), payload.get("filename"));
+    }
+
+    private String summarizePost(Post post) {
+        String html = post.getContentHtml() == null ? post.getContent() : post.getContentHtml();
+        String text = html == null ? "" : html.replaceAll("<[^>]*>", " ").replaceAll("\\s+", " ").trim();
+        if (text.isBlank()) {
+            return "A dedesite blog post.";
+        }
+        return text.length() > 180 ? text.substring(0, 177) + "..." : text;
+    }
+
+    private java.util.Optional<String> firstImage(Post post) {
+        if (post.getContentHtml() == null) {
+            return java.util.Optional.empty();
+        }
+        Matcher matcher = FIRST_IMAGE.matcher(post.getContentHtml());
+        if (!matcher.find()) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(matcher.group(1));
+    }
+
+    private String absoluteUrl(String url) {
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) {
+            return url;
+        }
+        String base = publicUrl.endsWith("/") ? publicUrl.substring(0, publicUrl.length() - 1) : publicUrl;
+        String path = url.startsWith("/") ? url : "/" + url;
+        return base + path;
     }
 }
