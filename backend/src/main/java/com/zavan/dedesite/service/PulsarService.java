@@ -1,9 +1,9 @@
 package com.zavan.dedesite.service;
 
-import com.zavan.dedesite.model.Comet;
-import com.zavan.dedesite.model.Pulsar;
+import com.zavan.dedesite.model.Orbit;
+import com.zavan.dedesite.model.StarSystem;
 import com.zavan.dedesite.model.User;
-import com.zavan.dedesite.repository.PulsarRepository;
+import com.zavan.dedesite.repository.OrbitRepository;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -12,64 +12,69 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PulsarService {
-    private final PulsarRepository pulsarRepository;
-    private final CometService cometService;
+    private final OrbitRepository orbitRepository;
+    private final StarSystemService starSystemService;
 
-    public PulsarService(PulsarRepository pulsarRepository, CometService cometService) {
-        this.pulsarRepository = pulsarRepository;
-        this.cometService = cometService;
+    public PulsarService(OrbitRepository orbitRepository, StarSystemService starSystemService) {
+        this.orbitRepository = orbitRepository;
+        this.starSystemService = starSystemService;
     }
 
-    public List<Pulsar> findAll(User user) {
-        return pulsarRepository.findByUserOrderByActiveDescCreatedAtDesc(user);
+    public List<Orbit> findAll(User user) {
+        return orbitRepository.findByUserAndKindOrderByActiveDescCreatedAtDesc(user, Orbit.Kind.PULSAR);
     }
 
-    public List<Pulsar> findActive(User user) {
-        return pulsarRepository.findByUserAndActiveTrueOrderByCreatedAtDesc(user);
+    public List<Orbit> findActive(User user) {
+        return orbitRepository.findByUserAndKindAndActiveTrueOrderByCreatedAtDesc(user, Orbit.Kind.PULSAR);
     }
 
-    public Pulsar getOwned(Long id, User user) {
-        return pulsarRepository.findByIdAndUser(id, user)
+    public Orbit getOwned(UUID publicId, User user) {
+        Orbit orbit = orbitRepository.findByPublicIdAndUser(publicId, user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (!orbit.isPulsar()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return orbit;
     }
 
-    public Pulsar getOwned(UUID publicId, User user) {
-        return pulsarRepository.findByPublicIdAndUser(publicId, user)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public Orbit save(Orbit pulsar, Long starSystemId, User user) {
+        applyPulsarDefaults(pulsar, user, starSystemId);
+        return orbitRepository.save(pulsar);
     }
 
-    public Pulsar save(Pulsar pulsar, Long relatedExamId, User user) {
-        pulsar.setUser(user);
-        pulsar.setRelatedExam(resolveExam(relatedExamId, user));
-        return pulsarRepository.save(pulsar);
-    }
-
-    public void update(UUID publicId, Pulsar form, Long relatedExamId, User user) {
-        Pulsar pulsar = getOwned(publicId, user);
+    public void update(UUID publicId, Orbit form, Long starSystemId, User user) {
+        Orbit pulsar = getOwned(publicId, user);
         pulsar.setTitle(form.getTitle());
-        pulsar.setSubject(form.getSubject());
-        pulsar.setFrequency(form.getFrequency());
+        pulsar.setDescription(form.getDescription());
         pulsar.setTargetMinutesPerWeek(form.getTargetMinutesPerWeek());
-        pulsar.setRelatedExam(resolveExam(relatedExamId, user));
+        pulsar.setMinimumSessionMinutes(form.getMinimumSessionMinutes());
+        pulsar.setMaximumSessionMinutes(form.getMaximumSessionMinutes());
+        pulsar.setEnergyType(form.getEnergyType());
+        pulsar.setPriority(form.getPriority());
+        pulsar.setStarSystem(resolveStarSystem(starSystemId, user));
+        pulsar.setAutoSchedule(form.isAutoSchedule());
         pulsar.setActive(form.isActive());
-        pulsarRepository.save(pulsar);
+        orbitRepository.save(pulsar);
     }
 
     public void toggle(UUID publicId, User user) {
-        Pulsar pulsar = getOwned(publicId, user);
+        Orbit pulsar = getOwned(publicId, user);
         pulsar.setActive(!pulsar.isActive());
-        pulsarRepository.save(pulsar);
+        orbitRepository.save(pulsar);
     }
 
     public void delete(UUID publicId, User user) {
-        pulsarRepository.delete(getOwned(publicId, user));
+        orbitRepository.delete(getOwned(publicId, user));
     }
 
-    private Comet resolveExam(Long relatedExamId, User user) {
-        if (relatedExamId == null) {
-            return null;
-        }
-        Comet comet = cometService.getOwned(relatedExamId, user);
-        return comet.getType() == Comet.Type.EXAM ? comet : null;
+    private void applyPulsarDefaults(Orbit pulsar, User user, Long starSystemId) {
+        pulsar.setUser(user);
+        pulsar.setKind(Orbit.Kind.PULSAR);
+        pulsar.setFlexibility(Orbit.Flexibility.FLEXIBLE);
+        pulsar.setStarSystem(resolveStarSystem(starSystemId, user));
+    }
+
+    private StarSystem resolveStarSystem(Long starSystemId, User user) {
+        return starSystemId == null ? null : starSystemService.getOwned(starSystemId, user);
     }
 }

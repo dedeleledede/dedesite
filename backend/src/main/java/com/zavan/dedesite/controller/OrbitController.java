@@ -108,6 +108,7 @@ public class OrbitController {
         model.addAttribute("editId", editId);
         model.addAttribute("days", DayOfWeek.values());
         model.addAttribute("categories", Orbit.Category.values());
+        model.addAttribute("kinds", List.of(Orbit.Kind.LOCKED, Orbit.Kind.REST, Orbit.Kind.MAINTENANCE, Orbit.Kind.ECLIPSE));
         model.addAttribute("observatoryService", observatoryService);
         model.addAttribute("twelveHourClock", twelveHourClock);
         model.addAttribute("timeFormat", observatoryService.timeFormatLabel(twelveHourClock));

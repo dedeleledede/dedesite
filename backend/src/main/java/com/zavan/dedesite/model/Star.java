@@ -47,6 +47,9 @@ public class Star {
     @Enumerated(EnumType.STRING)
     private Priority priority = Priority.MEDIUM;
 
+    @Enumerated(EnumType.STRING)
+    private StarSystem.EnergyType energyType = StarSystem.EnergyType.LIGHT_ADMIN;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 
@@ -88,6 +91,8 @@ public class Star {
     public void setStatus(Status status) { this.status = status; }
     public Priority getPriority() { return priority; }
     public void setPriority(Priority priority) { this.priority = priority; }
+    public StarSystem.EnergyType getEnergyType() { return energyType; }
+    public void setEnergyType(StarSystem.EnergyType energyType) { this.energyType = energyType; }
     public LocalDate getDueDate() { return dueDate; }
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
     public Integer getEstimatedMinutes() { return estimatedMinutes; }

@@ -2652,6 +2652,23 @@ article,
     outline-offset: 2px;
 }
 
+.course-suggestion .check-row {
+    align-items: start;
+    display: flex;
+    gap: 0.65rem;
+    width: 100%;
+}
+
+.course-suggestion .check-row span,
+.course-suggestion .check-row strong,
+.course-suggestion .check-row em {
+    display: block;
+}
+
+.course-suggestion .check-row em {
+    margin-top: 0.25rem;
+}
+
 .observatory-form button {
     align-self: end;
     min-height: 2.4rem;

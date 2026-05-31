@@ -16,6 +16,7 @@
         <a th:each="status : ${statuses}" th:href="@{/observatory/stars(status=${status})}" th:text="${status}">READY</a>
         <a th:href="@{/observatory/stars(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
+        <a th:href="@{/observatory/chart-course}">Chart Course</a>
     </nav>
 
     <form class="observatory-form" th:action="${editId == null} ? @{/observatory/stars} : @{/observatory/stars/{publicId}(publicId=${editId})}" th:object="${star}" method="post">
@@ -32,6 +33,7 @@
             </label>
             <label>Status <select th:field="*{status}"><option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option></select></label>
             <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
+            <label>Energy <select th:field="*{energyType}"><option th:each="energyType : ${energyTypes}" th:value="${energyType}" th:text="${energyType}"></option></select></label>
         </fieldset>
         <fieldset class="star-form-section flight-plan">
             <legend>Flight Plan</legend>

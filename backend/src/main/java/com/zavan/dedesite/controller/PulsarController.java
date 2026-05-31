@@ -1,10 +1,12 @@
 package com.zavan.dedesite.controller;
 
-import com.zavan.dedesite.model.Pulsar;
+import com.zavan.dedesite.model.Orbit;
+import com.zavan.dedesite.model.Star;
+import com.zavan.dedesite.model.StarSystem;
 import com.zavan.dedesite.model.User;
-import com.zavan.dedesite.service.CometService;
 import com.zavan.dedesite.service.CurrentUserService;
 import com.zavan.dedesite.service.PulsarService;
+import com.zavan.dedesite.service.StarSystemService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,33 +26,37 @@ import java.util.UUID;
 public class PulsarController {
     private final CurrentUserService currentUserService;
     private final PulsarService pulsarService;
-    private final CometService cometService;
+    private final StarSystemService starSystemService;
 
-    public PulsarController(CurrentUserService currentUserService, PulsarService pulsarService, CometService cometService) {
+    public PulsarController(CurrentUserService currentUserService, PulsarService pulsarService, StarSystemService starSystemService) {
         this.currentUserService = currentUserService;
         this.pulsarService = pulsarService;
-        this.cometService = cometService;
+        this.starSystemService = starSystemService;
     }
 
     @GetMapping
     public String list(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         User user = currentUserService.requireUser(userDetails);
-        fillModel(model, user, new Pulsar(), null);
+        Orbit pulsar = new Orbit();
+        pulsar.setKind(Orbit.Kind.PULSAR);
+        pulsar.setFlexibility(Orbit.Flexibility.FLEXIBLE);
+        pulsar.setAutoSchedule(true);
+        fillModel(model, user, pulsar, null);
         return "observatory/pulsars";
     }
 
     @PostMapping
     public String create(@AuthenticationPrincipal UserDetails userDetails,
-                         @Valid @ModelAttribute("pulsar") Pulsar pulsar,
+                         @Valid @ModelAttribute("pulsar") Orbit pulsar,
                          BindingResult bindingResult,
-                         @RequestParam(required = false) Long relatedExamId,
+                         @RequestParam(required = false) Long starSystemId,
                          Model model) {
         User user = currentUserService.requireUser(userDetails);
         if (bindingResult.hasErrors()) {
             fillModel(model, user, pulsar, null);
             return "observatory/pulsars";
         }
-        pulsarService.save(pulsar, relatedExamId, user);
+        pulsarService.save(pulsar, starSystemId, user);
         return "redirect:/observatory/pulsars";
     }
 
@@ -64,16 +70,16 @@ public class PulsarController {
     @PostMapping("/{publicId}")
     public String update(@AuthenticationPrincipal UserDetails userDetails,
                          @PathVariable UUID publicId,
-                         @Valid @ModelAttribute("pulsar") Pulsar pulsar,
+                         @Valid @ModelAttribute("pulsar") Orbit pulsar,
                          BindingResult bindingResult,
-                         @RequestParam(required = false) Long relatedExamId,
+                         @RequestParam(required = false) Long starSystemId,
                          Model model) {
         User user = currentUserService.requireUser(userDetails);
         if (bindingResult.hasErrors()) {
             fillModel(model, user, pulsar, publicId);
             return "observatory/pulsars";
         }
-        pulsarService.update(publicId, pulsar, relatedExamId, user);
+        pulsarService.update(publicId, pulsar, starSystemId, user);
         return "redirect:/observatory/pulsars";
     }
 
@@ -89,13 +95,12 @@ public class PulsarController {
         return "redirect:/observatory/pulsars";
     }
 
-    private void fillModel(Model model, User user, Pulsar pulsar, UUID editId) {
+    private void fillModel(Model model, User user, Orbit pulsar, UUID editId) {
         model.addAttribute("pulsars", pulsarService.findAll(user));
         model.addAttribute("pulsar", pulsar);
         model.addAttribute("editId", editId);
-        model.addAttribute("frequencies", Pulsar.Frequency.values());
-        model.addAttribute("exams", cometService.findAll(user).stream()
-                .filter(comet -> comet.getType() == com.zavan.dedesite.model.Comet.Type.EXAM)
-                .toList());
+        model.addAttribute("priorities", Star.Priority.values());
+        model.addAttribute("energyTypes", StarSystem.EnergyType.values());
+        model.addAttribute("starSystems", starSystemService.findOpen(user));
     }
 }

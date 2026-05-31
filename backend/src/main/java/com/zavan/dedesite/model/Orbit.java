@@ -14,6 +14,14 @@ public class Orbit {
         WORK, UNIVERSITY, FOOD, SLEEP, COMMUTE, HEALTH, CHORES, OTHER
     }
 
+    public enum Kind {
+        LOCKED, PULSAR, REST, MAINTENANCE, ECLIPSE
+    }
+
+    public enum Flexibility {
+        FIXED, FLEXIBLE
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +43,12 @@ public class Orbit {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    private Kind kind = Kind.LOCKED;
+
+    @Enumerated(EnumType.STRING)
+    private Flexibility flexibility = Flexibility.FIXED;
+
+    @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
 
     @DateTimeFormat(pattern = "HH:mm")
@@ -46,8 +60,23 @@ public class Orbit {
     @Enumerated(EnumType.STRING)
     private Category category = Category.OTHER;
 
+    private Integer targetMinutesPerWeek;
+    private Integer minimumSessionMinutes;
+    private Integer maximumSessionMinutes;
+
+    @Enumerated(EnumType.STRING)
+    private StarSystem.EnergyType energyType = StarSystem.EnergyType.LIGHT_ADMIN;
+
+    @Enumerated(EnumType.STRING)
+    private Star.Priority priority = Star.Priority.MEDIUM;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "star_system_id")
+    private StarSystem starSystem;
+
     private String colorKey = "violet";
     private boolean active = true;
+    private boolean autoSchedule;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
     private Integer encryptionKeyVersion = 1;
@@ -67,6 +96,10 @@ public class Orbit {
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public Kind getKind() { return kind == null ? Kind.LOCKED : kind; }
+    public void setKind(Kind kind) { this.kind = kind; }
+    public Flexibility getFlexibility() { return flexibility == null ? Flexibility.FIXED : flexibility; }
+    public void setFlexibility(Flexibility flexibility) { this.flexibility = flexibility; }
     public DayOfWeek getDayOfWeek() { return dayOfWeek; }
     public void setDayOfWeek(DayOfWeek dayOfWeek) { this.dayOfWeek = dayOfWeek; }
     public LocalTime getStartTime() { return startTime; }
@@ -75,10 +108,26 @@ public class Orbit {
     public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
+    public Integer getTargetMinutesPerWeek() { return targetMinutesPerWeek; }
+    public void setTargetMinutesPerWeek(Integer targetMinutesPerWeek) { this.targetMinutesPerWeek = targetMinutesPerWeek; }
+    public Integer getMinimumSessionMinutes() { return minimumSessionMinutes; }
+    public void setMinimumSessionMinutes(Integer minimumSessionMinutes) { this.minimumSessionMinutes = minimumSessionMinutes; }
+    public Integer getMaximumSessionMinutes() { return maximumSessionMinutes; }
+    public void setMaximumSessionMinutes(Integer maximumSessionMinutes) { this.maximumSessionMinutes = maximumSessionMinutes; }
+    public StarSystem.EnergyType getEnergyType() { return energyType; }
+    public void setEnergyType(StarSystem.EnergyType energyType) { this.energyType = energyType; }
+    public Star.Priority getPriority() { return priority; }
+    public void setPriority(Star.Priority priority) { this.priority = priority; }
+    public StarSystem getStarSystem() { return starSystem; }
+    public void setStarSystem(StarSystem starSystem) { this.starSystem = starSystem; }
     public String getColorKey() { return colorKey; }
     public void setColorKey(String colorKey) { this.colorKey = colorKey; }
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+    public boolean isAutoSchedule() { return autoSchedule; }
+    public void setAutoSchedule(boolean autoSchedule) { this.autoSchedule = autoSchedule; }
+    public boolean isPulsar() { return getKind() == Kind.PULSAR; }
+    public boolean isFixedBlock() { return getKind() != Kind.PULSAR && getFlexibility() == Flexibility.FIXED; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

@@ -20,11 +20,15 @@ public class OrbitService {
     }
 
     public List<Orbit> findAll(User user) {
-        return orbitRepository.findByUserOrderByDayOfWeekAscStartTimeAsc(user);
+        return orbitRepository.findByUserOrderByDayOfWeekAscStartTimeAsc(user).stream()
+                .filter(orbit -> !orbit.isPulsar())
+                .toList();
     }
 
     public List<Orbit> findActiveForDay(User user, DayOfWeek dayOfWeek) {
-        return orbitRepository.findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, dayOfWeek);
+        return orbitRepository.findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, dayOfWeek).stream()
+                .filter(Orbit::isFixedBlock)
+                .toList();
     }
 
     public Orbit getOwned(Long id, User user) {
@@ -49,10 +53,14 @@ public class OrbitService {
             orbit.setUser(user);
             orbit.setTitle(form.getTitle());
             orbit.setDescription(form.getDescription());
+            orbit.setKind(form.getKind());
+            orbit.setFlexibility(form.getFlexibility());
             orbit.setDayOfWeek(day);
             orbit.setStartTime(form.getStartTime());
             orbit.setEndTime(form.getEndTime());
             orbit.setCategory(form.getCategory());
+            orbit.setEnergyType(form.getEnergyType());
+            orbit.setPriority(form.getPriority());
             orbit.setColorKey(form.getColorKey());
             orbit.setActive(form.isActive());
             orbitRepository.save(orbit);
@@ -63,10 +71,14 @@ public class OrbitService {
         Orbit orbit = getOwned(publicId, user);
         orbit.setTitle(form.getTitle());
         orbit.setDescription(form.getDescription());
+        orbit.setKind(form.getKind());
+        orbit.setFlexibility(form.getFlexibility());
         orbit.setDayOfWeek(form.getDayOfWeek());
         orbit.setStartTime(form.getStartTime());
         orbit.setEndTime(form.getEndTime());
         orbit.setCategory(form.getCategory());
+        orbit.setEnergyType(form.getEnergyType());
+        orbit.setPriority(form.getPriority());
         orbit.setColorKey(form.getColorKey());
         orbit.setActive(form.isActive());
         orbitRepository.save(orbit);

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Launch Windows - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Launch Windows</h1>
+        <p th:text="|available time from ${weekStart} to ${weekEnd}.|">available time this week.</p>
+    </div>
+    <nav class="observatory-tabs">
+        <a th:href="@{/observatory}">Mission Control</a>
+        <a th:href="@{/observatory/sky-map(week=${weekStart})}">Sky Map</a>
+        <a th:href="@{/observatory/chart-course(week=${weekStart})}">Chart Course</a>
+    </nav>
+    <div class="sky-controls">
+        <div class="sky-control-group" aria-label="Week navigation">
+            <span>Week</span>
+            <a class="button" th:href="@{/observatory/launch-windows(week=${previousWeek})}">Previous</a>
+            <a class="button" th:href="@{/observatory/launch-windows}">Current</a>
+            <a class="button" th:href="@{/observatory/launch-windows(week=${nextWeek})}">Next</a>
+        </div>
+    </div>
+    <div class="observatory-table">
+        <p class="empty-state" th:if="${#lists.isEmpty(launchWindows)}">No Launch Windows found.</p>
+        <article class="observatory-row" th:each="window : ${launchWindows}">
+            <div>
+                <strong th:text="${#temporals.format(window.start, 'EEEE dd/MM')}">Monday</strong>
+                <span th:text="|${#temporals.format(window.start, 'HH:mm')} - ${#temporals.format(window.end, 'HH:mm')}|">08:00 - 09:00</span>
+                <em th:text="|${window.minutes()} min / ${window.recommendedEnergyType}|">60 min</em>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

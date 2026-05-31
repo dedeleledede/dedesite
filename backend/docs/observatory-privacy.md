@@ -9,3 +9,10 @@ This is not full zero-knowledge encryption. A server or application operator wit
 Set `OBSERVATORY_ENCRYPTION_KEY` in the runtime environment. The key is not stored in the database, hard-coded in application code, or committed to the repository.
 
 The Observatory intentionally does not include iCalendar export or Google Calendar synchronization.
+
+Pulsars are stored as encrypted Observatory Orbits with `kind = PULSAR`. They are not a
+separate application entity. On startup, legacy rows from an existing `pulsars` table are
+copied into `orbits` without decrypting their semantic fields. Keep the old table until the
+migrated rows have been verified, then it can be removed manually. The legacy optional
+Pulsar-to-exam relation is not copied because the unified Orbit model links scheduling goals
+to Star Systems instead.

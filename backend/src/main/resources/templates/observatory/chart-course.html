@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Chart Course - Observatory</title>
+</head>
+<body>
+<section class="observatory-page">
+    <div class="observatory-hero compact">
+        <p class="observatory-kicker">Observatory</p>
+        <h1>Chart Course</h1>
+        <p>preview a realistic weekly route. Nothing is saved until you accept selected suggestions.</p>
+    </div>
+    <nav class="observatory-tabs">
+        <a th:href="@{/observatory}">Mission Control</a>
+        <a th:href="@{/observatory/sky-map(week=${weekStart})}">Sky Map</a>
+        <a th:href="@{/observatory/launch-windows(week=${weekStart})}">Launch Windows</a>
+        <a th:href="@{/observatory/pulsars}">Pulsars</a>
+        <a th:href="@{/observatory/stars}">Stars</a>
+    </nav>
+    <div class="sky-controls">
+        <div class="sky-control-group" aria-label="Week navigation">
+            <span>Week</span>
+            <a class="button" th:href="@{/observatory/chart-course(week=${previousWeek})}">Previous</a>
+            <a class="button" th:href="@{/observatory/chart-course}">Current</a>
+            <a class="button" th:href="@{/observatory/chart-course(week=${nextWeek})}">Next</a>
+        </div>
+        <a class="button primary" th:href="@{/observatory/chart-course(week=${weekStart},generate=true)}">Generate Course</a>
+    </div>
+
+    <div class="mission-focus">
+        <span>Scheduling rules</span>
+        <strong>65% free-time fill / 180 min daily cap / 15 min buffer</strong>
+        <p>Deep focus is avoided after 21:00. Wind-down is protected after 22:30.</p>
+    </div>
+    <div class="sky-warning" th:if="${acceptedCount != null}" th:text="|Accepted ${acceptedCount} suggestions.|">Accepted.</div>
+
+    <form th:if="${course != null}" th:action="@{/observatory/chart-course/accept}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="week" th:value="${weekStart}">
+        <div class="observatory-table">
+            <p class="empty-state" th:if="${#lists.isEmpty(course.suggestions)}">No suggestions fit this week.</p>
+            <article class="observatory-row course-suggestion" th:each="suggestion : ${course.suggestions}">
+                <label class="check-row">
+                    <input type="checkbox" name="selected" th:value="${suggestion.key()}" th:disabled="${!suggestion.acceptable}">
+                    <span>
+                        <strong th:text="${suggestion.title}">Star</strong>
+                        <span th:text="|${#temporals.format(suggestion.start, 'EEEE dd/MM HH:mm')} - ${#temporals.format(suggestion.end, 'HH:mm')}|">Monday</span>
+                        <em th:text="|${suggestion.sourceType} / ${suggestion.durationMinutes} min / ${suggestion.energyType} / ${suggestion.reason}|">reason</em>
+                    </span>
+                </label>
+            </article>
+        </div>
+        <button class="button primary" type="submit" th:unless="${#lists.isEmpty(course.suggestions)}">Accept Selected</button>
+        <a class="button" th:href="@{/observatory/chart-course(week=${weekStart})}">Discard</a>
+    </form>
+</section>
+</body>
+</html>

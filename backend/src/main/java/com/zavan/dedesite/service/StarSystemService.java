@@ -5,6 +5,7 @@ import com.zavan.dedesite.model.Comet;
 import com.zavan.dedesite.model.Star;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.repository.CometRepository;
+import com.zavan.dedesite.repository.OrbitRepository;
 import com.zavan.dedesite.repository.StarSystemRepository;
 import com.zavan.dedesite.repository.StarRepository;
 import java.util.List;
@@ -18,11 +19,13 @@ public class StarSystemService {
     private final StarSystemRepository starSystemRepository;
     private final StarRepository starRepository;
     private final CometRepository cometRepository;
+    private final OrbitRepository orbitRepository;
 
-    public StarSystemService(StarSystemRepository starSystemRepository, StarRepository starRepository, CometRepository cometRepository) {
+    public StarSystemService(StarSystemRepository starSystemRepository, StarRepository starRepository, CometRepository cometRepository, OrbitRepository orbitRepository) {
         this.starSystemRepository = starSystemRepository;
         this.starRepository = starRepository;
         this.cometRepository = cometRepository;
+        this.orbitRepository = orbitRepository;
     }
 
     public List<StarSystem> findAll(User user) {
@@ -74,6 +77,9 @@ public class StarSystemService {
         List<Comet> comets = cometRepository.findByUserAndRelatedStarSystemOrderByDateAscStartTimeAsc(user, starSystem);
         comets.forEach(comet -> comet.setRelatedStarSystem(null));
         cometRepository.saveAll(comets);
+        List<com.zavan.dedesite.model.Orbit> orbits = orbitRepository.findByUserAndStarSystem(user, starSystem);
+        orbits.forEach(orbit -> orbit.setStarSystem(null));
+        orbitRepository.saveAll(orbits);
         starSystemRepository.delete(starSystem);
     }
 }

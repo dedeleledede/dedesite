@@ -20,6 +20,8 @@
         <a th:href="@{/observatory/comets}">Comets</a>
         <a th:href="@{/observatory/nebula}">Nebula</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
+        <a th:href="@{/observatory/launch-windows}">Launch Windows</a>
+        <a th:href="@{/observatory/chart-course}">Chart Course</a>
         <a th:href="@{/observatory/search}">Search</a>
         <a th:href="@{/observatory(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
     </nav>
@@ -110,7 +112,7 @@
             <ul class="astro-list">
                 <li th:each="pulsar : ${mission.activePulsars}">
                     <strong th:text="${pulsar.title}">Practice</strong>
-                    <span th:text="${pulsar.frequency}">WEEKLY</span>
+                    <span th:text="${pulsar.energyType}">STUDY</span>
                     <em th:text="|${pulsar.targetMinutesPerWeek ?: 0} min weekly|">minutes</em>
                 </li>
             </ul>

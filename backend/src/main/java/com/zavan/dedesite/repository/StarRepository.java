@@ -16,10 +16,17 @@ public interface StarRepository extends JpaRepository<Star, Long> {
     List<Star> findByUserAndStatusNotOrderByDueDateAscCreatedAtDesc(User user, Star.Status status);
     List<Star> findByUserAndStarSystemOrderByStatusAscDueDateAsc(User user, StarSystem starSystem);
     List<Star> findByUserAndScheduledStartBetweenOrderByScheduledStartAsc(User user, LocalDateTime start, LocalDateTime end);
+    List<ScheduledBlock> findAllProjectedByUserAndScheduledStartBetweenOrderByScheduledStartAsc(User user, LocalDateTime start, LocalDateTime end);
+    List<Star> findByUserAndScheduledStartIsNullAndScheduledEndIsNullAndStatusNotOrderByDueDateAscCreatedAtAsc(User user, Star.Status status);
     List<Star> findByUserAndDueDateBetweenAndStatusNotOrderByDueDateAsc(User user, LocalDate start, LocalDate end, Star.Status status);
     List<Star> findByUserAndDueDateBeforeAndStatusNotOrderByDueDateAsc(User user, LocalDate date, Star.Status status);
     long countByUserAndStarSystemAndStatusNot(User user, StarSystem starSystem, Star.Status status);
     Optional<Star> findFirstByUserAndStarSystemAndStatusNotOrderByDueDateAscCreatedAtAsc(User user, StarSystem starSystem, Star.Status status);
     Optional<Star> findByIdAndUser(Long id, User user);
     Optional<Star> findByPublicIdAndUser(UUID publicId, User user);
+
+    interface ScheduledBlock {
+        LocalDateTime getScheduledStart();
+        LocalDateTime getScheduledEnd();
+    }
 }

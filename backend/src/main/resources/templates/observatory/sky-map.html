@@ -21,6 +21,8 @@
         <a th:href="@{/observatory/stars}">Stars</a>
         <a th:href="@{/observatory/comets}">Comets</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
+        <a th:href="@{/observatory/launch-windows(week=${skyMap.weekStart})}">Launch Windows</a>
+        <a th:href="@{/observatory/chart-course(week=${skyMap.weekStart})}">Chart Course</a>
         <a th:href="@{/observatory/search}">Search</a>
     </nav>
     <div class="sky-controls">

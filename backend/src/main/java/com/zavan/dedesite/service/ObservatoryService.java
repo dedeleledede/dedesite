@@ -2,12 +2,10 @@ package com.zavan.dedesite.service;
 
 import com.zavan.dedesite.model.Comet;
 import com.zavan.dedesite.model.Orbit;
-import com.zavan.dedesite.model.Pulsar;
 import com.zavan.dedesite.model.Star;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.repository.CometRepository;
 import com.zavan.dedesite.repository.OrbitRepository;
-import com.zavan.dedesite.repository.PulsarRepository;
 import com.zavan.dedesite.repository.StarRepository;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -29,24 +27,22 @@ public class ObservatoryService {
     private final OrbitRepository orbitRepository;
     private final StarRepository starRepository;
     private final CometRepository cometRepository;
-    private final PulsarRepository pulsarRepository;
 
-    public ObservatoryService(OrbitRepository orbitRepository, StarRepository starRepository, CometRepository cometRepository, PulsarRepository pulsarRepository) {
+    public ObservatoryService(OrbitRepository orbitRepository, StarRepository starRepository, CometRepository cometRepository) {
         this.orbitRepository = orbitRepository;
         this.starRepository = starRepository;
         this.cometRepository = cometRepository;
-        this.pulsarRepository = pulsarRepository;
     }
 
     public MissionControl missionControl(User user) {
         LocalDate today = LocalDate.now();
         LocalDateTime dayStart = today.atStartOfDay();
         LocalDateTime dayEnd = today.plusDays(1).atStartOfDay();
-        List<Orbit> todayOrbits = orbitRepository.findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, today.getDayOfWeek());
+        List<Orbit> todayOrbits = fixedOrbitsForDay(user, today.getDayOfWeek());
         List<Star> scheduledStars = starRepository.findByUserAndScheduledStartBetweenOrderByScheduledStartAsc(user, dayStart, dayEnd);
         List<Comet> todayComets = cometRepository.findByUserAndDateOrderByStartTimeAsc(user, today);
         List<Comet> upcomingComets = cometRepository.findByUserAndDateBetweenOrderByDateAscStartTimeAsc(user, today, today.plusDays(14));
-        List<Pulsar> activePulsars = pulsarRepository.findByUserAndActiveTrueOrderByCreatedAtDesc(user);
+        List<Orbit> activePulsars = orbitRepository.findByUserAndKindAndActiveTrueOrderByCreatedAtDesc(user, Orbit.Kind.PULSAR);
         List<Star> openStars = starRepository.findByUserAndStatusNotOrderByDueDateAscCreatedAtDesc(user, Star.Status.DONE);
         List<Star> nebulaStars = starRepository.findByUserAndStatusOrderByCreatedAtDesc(user, Star.Status.NEBULA);
         List<Star> supernovaStars = openStars.stream().filter(this::isSupernova).toList();
@@ -78,7 +74,7 @@ public class ObservatoryService {
                     .reduce(Duration.ZERO, Duration::plus));
             days.add(new SkyDay(
                     day,
-                    orbitRepository.findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, day.getDayOfWeek()),
+                    fixedOrbitsForDay(user, day.getDayOfWeek()),
                     starRepository.findByUserAndScheduledStartBetweenOrderByScheduledStartAsc(user, day.atStartOfDay(), day.plusDays(1).atStartOfDay()),
                     cometRepository.findByUserAndDateOrderByStartTimeAsc(user, day),
                     windows));
@@ -93,17 +89,19 @@ public class ObservatoryService {
 
     public List<LaunchWindow> launchWindowsForDay(User user, LocalDate date) {
         List<BusyBlock> busy = new ArrayList<>();
-        orbitRepository.findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, date.getDayOfWeek()).forEach(orbit -> {
+        orbitRepository.findAllProjectedByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, date.getDayOfWeek()).stream()
+                .filter(OrbitRepository.TimedOrbit::isFixedBlock)
+                .forEach(orbit -> {
             if (orbit.getStartTime() != null && orbit.getEndTime() != null) {
                 busy.add(new BusyBlock(date.atTime(orbit.getStartTime()), date.atTime(orbit.getEndTime())));
             }
         });
-        starRepository.findByUserAndScheduledStartBetweenOrderByScheduledStartAsc(user, date.atStartOfDay(), date.plusDays(1).atStartOfDay()).forEach(star -> {
+        starRepository.findAllProjectedByUserAndScheduledStartBetweenOrderByScheduledStartAsc(user, date.atStartOfDay(), date.plusDays(1).atStartOfDay()).forEach(star -> {
             if (star.getScheduledStart() != null && star.getScheduledEnd() != null) {
                 busy.add(new BusyBlock(star.getScheduledStart(), star.getScheduledEnd()));
             }
         });
-        cometRepository.findByUserAndDateOrderByStartTimeAsc(user, date).forEach(comet -> {
+        cometRepository.findAllProjectedByUserAndDateOrderByStartTimeAsc(user, date).forEach(comet -> {
             if (comet.getStartTime() != null && comet.getEndTime() != null) {
                 busy.add(new BusyBlock(date.atTime(comet.getStartTime()), date.atTime(comet.getEndTime())));
             }
@@ -116,21 +114,31 @@ public class ObservatoryService {
         for (BusyBlock block : busy) {
             LocalDateTime start = block.start().isBefore(cursor) ? cursor : block.start();
             if (start.isAfter(cursor) && Duration.between(cursor, start).toMinutes() >= 30) {
-                windows.add(new LaunchWindow(cursor, start));
+                windows.add(new LaunchWindow(cursor, start, recommendedEnergyType(cursor)));
             }
             if (block.end().isAfter(cursor)) {
                 cursor = block.end();
             }
         }
         if (dayEnd.isAfter(cursor) && Duration.between(cursor, dayEnd).toMinutes() >= 30) {
-            windows.add(new LaunchWindow(cursor, dayEnd));
+            windows.add(new LaunchWindow(cursor, dayEnd, recommendedEnergyType(cursor)));
+        }
+        return windows;
+    }
+
+    public List<LaunchWindow> findLaunchWindows(User user, LocalDate startDate, LocalDate endDate) {
+        List<LaunchWindow> windows = new ArrayList<>();
+        LocalDate cursor = startDate;
+        while (!cursor.isAfter(endDate)) {
+            windows.addAll(launchWindowsForDay(user, cursor));
+            cursor = cursor.plusDays(1);
         }
         return windows;
     }
 
     public List<TimelineBlock> timelineForDay(User user, LocalDate date) {
         List<TimelineBlock> blocks = new ArrayList<>();
-        orbitRepository.findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, date.getDayOfWeek()).forEach(orbit -> {
+        fixedOrbitsForDay(user, date.getDayOfWeek()).forEach(orbit -> {
             if (orbit.getStartTime() != null && orbit.getEndTime() != null) {
                 blocks.add(new TimelineBlock(date.atTime(orbit.getStartTime()), date.atTime(orbit.getEndTime()), "Orbit", orbit.getTitle()));
             }
@@ -216,9 +224,26 @@ public class ObservatoryService {
         return Duration.between(start, end);
     }
 
+    private List<Orbit> fixedOrbitsForDay(User user, DayOfWeek dayOfWeek) {
+        return orbitRepository.findByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, dayOfWeek).stream()
+                .filter(Orbit::isFixedBlock)
+                .toList();
+    }
+
+    private com.zavan.dedesite.model.StarSystem.EnergyType recommendedEnergyType(LocalDateTime start) {
+        int hour = start.getHour();
+        if (hour >= 21) {
+            return com.zavan.dedesite.model.StarSystem.EnergyType.LIGHT_ADMIN;
+        }
+        if (hour >= 18) {
+            return com.zavan.dedesite.model.StarSystem.EnergyType.CREATIVE;
+        }
+        return com.zavan.dedesite.model.StarSystem.EnergyType.DEEP_FOCUS;
+    }
+
     private record BusyBlock(LocalDateTime start, LocalDateTime end) {}
 
-    public record LaunchWindow(LocalDateTime start, LocalDateTime end) {
+    public record LaunchWindow(LocalDateTime start, LocalDateTime end, com.zavan.dedesite.model.StarSystem.EnergyType recommendedEnergyType) {
         public Duration duration() {
             return Duration.between(start, end);
         }
@@ -247,6 +272,6 @@ public class ObservatoryService {
             List<Comet> supernovaComets,
             List<LaunchWindow> launchWindows,
             List<Star> nebulaStars,
-            List<Pulsar> activePulsars,
+            List<Orbit> activePulsars,
             Star mainFocus) {}
 }

@@ -69,6 +69,7 @@ public class StarService {
         star.setDescription(form.getDescription());
         star.setStatus(form.getStatus());
         star.setPriority(form.getPriority());
+        star.setEnergyType(form.getEnergyType());
         star.setDueDate(form.getDueDate());
         star.setEstimatedMinutes(form.getEstimatedMinutes());
         star.setScheduledStart(form.getScheduledStart());

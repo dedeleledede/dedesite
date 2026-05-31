@@ -1,6 +1,7 @@
 package com.zavan.dedesite.controller;
 
 import com.zavan.dedesite.model.Star;
+import com.zavan.dedesite.model.StarSystem;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.service.StarSystemService;
 import com.zavan.dedesite.service.CurrentUserService;
@@ -108,6 +109,7 @@ public class StarController {
         model.addAttribute("filterStatus", filterStatus);
         model.addAttribute("statuses", Star.Status.values());
         model.addAttribute("priorities", Star.Priority.values());
+        model.addAttribute("energyTypes", StarSystem.EnergyType.values());
         model.addAttribute("starSystems", starSystemService.findOpen(user));
         model.addAttribute("twelveHourClock", twelveHourClock);
         model.addAttribute("timeFormat", observatoryService.timeFormatLabel(twelveHourClock));
