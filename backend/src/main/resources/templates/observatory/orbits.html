@@ -12,10 +12,13 @@
     </div>
     <nav class="observatory-tabs">
         <a th:href="@{/observatory}">Mission Control</a>
-        <a th:href="@{/observatory/orbits(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
         <a th:href="@{/observatory/sky-map}">Sky Map</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
     </nav>
+    <div class="clock-setup">
+        <span>Clock setup</span>
+        <a class="button" th:href="@{/observatory/orbits(timeFormat=${timeFormatToggle})}" th:text="${timeFormat}">24h</a>
+    </div>
 
     <form class="observatory-form" th:action="${editId == null} ? @{/observatory/orbits} : @{/observatory/orbits/{publicId}(publicId=${editId})}" th:object="${orbit}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -33,13 +36,20 @@
         <label>Start <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" th:attr="pattern=${twelveHourClock} ? null : '[0-2][0-9]:[0-5][0-9]', inputmode=${twelveHourClock} ? null : 'numeric'" placeholder="HH:mm" lang="en-GB" th:field="*{startTime}" required></label>
         <label>End <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" th:attr="pattern=${twelveHourClock} ? null : '[0-2][0-9]:[0-5][0-9]', inputmode=${twelveHourClock} ? null : 'numeric'" placeholder="HH:mm" lang="en-GB" th:field="*{endTime}" required></label>
         <label>Category <select th:field="*{category}"><option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option></select></label>
-        <label>Color Key <input th:field="*{colorKey}" placeholder="violet"></label>
+        <fieldset class="orbit-colors">
+            <legend>Color</legend>
+            <label class="orbit-color-option" th:each="color : ${colors}">
+                <input type="radio" th:field="*{colorKey}" th:value="${color.value}">
+                <span class="orbit-color-swatch" th:style="|--swatch-color: ${color.value}|"></span>
+                <span th:text="${color.label}">Ash</span>
+            </label>
+        </fieldset>
         <label class="check-row"><input type="checkbox" th:field="*{active}"> active Orbit</label>
         <button class="button primary" type="submit" th:text="${editId == null} ? 'Add Orbit' : 'Save Orbit'">Add Orbit</button>
     </form>
 
     <div class="observatory-table">
-        <article th:each="orbit : ${orbits}" class="observatory-row">
+        <article th:each="orbit : ${orbits}" class="observatory-row orbit-row" th:style="|--orbit-color: ${observatoryService.orbitColor(orbit.colorKey)}|">
             <div>
                 <strong th:text="${orbit.title}">Orbit</strong>
                 <span th:text="|${orbit.dayOfWeek} ${observatoryService.formatRange(orbit.startTime, orbit.endTime, twelveHourClock)}|">time</span>

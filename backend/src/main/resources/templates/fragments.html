@@ -19,6 +19,7 @@
         <a th:href="@{/themes}">Themes</a>
         <a th:href="@{/anonymous}">Anonymous</a>
         <a th:href="@{/apps}">Apps</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/site-settings}">Site Settings</a>
     </nav>
 </div>
 

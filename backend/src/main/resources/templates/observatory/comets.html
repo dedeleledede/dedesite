@@ -12,10 +12,13 @@
     </div>
     <nav class="observatory-tabs">
         <a th:href="@{/observatory}">Mission Control</a>
-        <a th:href="@{/observatory/comets(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
         <a th:href="@{/observatory/sky-map}">Sky Map</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
     </nav>
+    <div class="clock-setup">
+        <span>Clock setup</span>
+        <a class="button" th:href="@{/observatory/comets(timeFormat=${timeFormatToggle})}" th:text="${timeFormat}">24h</a>
+    </div>
 
     <form class="observatory-form" th:action="${editId == null} ? @{/observatory/comets} : @{/observatory/comets/{publicId}(publicId=${editId})}" th:object="${comet}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -23,13 +26,12 @@
         <label>Title <input th:field="*{title}" required></label>
         <label>Description <textarea th:field="*{description}"></textarea></label>
         <label>Type <select th:field="*{type}"><option th:each="type : ${types}" th:value="${type}" th:text="${type}"></option></select></label>
-        <label>Date <input type="date" th:field="*{date}" required></label>
+        <label>Date <input type="date" lang="pt-BR" th:field="*{date}" required></label>
         <label>Start <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" th:attr="pattern=${twelveHourClock} ? null : '[0-2][0-9]:[0-5][0-9]', inputmode=${twelveHourClock} ? null : 'numeric'" placeholder="HH:mm" lang="en-GB" th:field="*{startTime}"></label>
         <label>End <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" th:attr="pattern=${twelveHourClock} ? null : '[0-2][0-9]:[0-5][0-9]', inputmode=${twelveHourClock} ? null : 'numeric'" placeholder="HH:mm" lang="en-GB" th:field="*{endTime}"></label>
-        <label th:if="${twelveHourClock}">Remind at <input type="datetime-local" lang="en-GB" th:field="*{remindAt}"></label>
-        <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
-            <label>Reminder date <input class="observatory-date-entry" type="date" th:value="${comet.remindAt != null ? #temporals.format(comet.remindAt, 'yyyy-MM-dd') : ''}"></label>
-            <label>Reminder time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${comet.remindAt != null ? #temporals.format(comet.remindAt, 'HH:mm') : ''}"></label>
+        <div class="observatory-datetime-parts">
+            <label>Reminder date <input class="observatory-date-entry" type="date" lang="pt-BR" th:value="${comet.remindAt != null ? #temporals.format(comet.remindAt, 'yyyy-MM-dd') : ''}"></label>
+            <label>Reminder time <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" lang="en-GB" th:value="${comet.remindAt != null ? #temporals.format(comet.remindAt, 'HH:mm') : ''}"></label>
             <input type="hidden" th:field="*{remindAt}">
         </div>
         <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>

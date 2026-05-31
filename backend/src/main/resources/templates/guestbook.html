@@ -39,7 +39,7 @@
             <div class="guestbook-entry-meta">
                 <span class="guestbook-entry-number" th:text="${'#' + (iter.size - iter.index)}">#1</span>
                 <strong th:text="${entry.name}">visitor</strong>
-                <time th:datetime="${entry.createdAt}" th:text="${#temporals.format(entry.createdAt, 'dd/MM/yyyy HH:mm')}">
+                <time th:datetime="${entry.createdAt}" th:text="${#temporals.format(entry.createdAt, 'yyyy-MM-dd HH:mm')}">
                     date
                 </time>
             </div>

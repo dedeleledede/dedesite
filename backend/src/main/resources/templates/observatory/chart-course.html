@@ -44,7 +44,7 @@
                     <input type="checkbox" name="selected" th:value="${suggestion.key()}" th:disabled="${!suggestion.acceptable}">
                     <span>
                         <strong th:text="${suggestion.title}">Star</strong>
-                        <span th:text="|${#temporals.format(suggestion.start, 'EEEE dd/MM HH:mm')} - ${#temporals.format(suggestion.end, 'HH:mm')}|">Monday</span>
+                        <span th:text="|${#temporals.format(suggestion.start, 'EEEE yyyy-MM-dd HH:mm')} - ${#temporals.format(suggestion.end, 'HH:mm')}|">Monday</span>
                         <em th:text="|${suggestion.sourceType} / ${suggestion.durationMinutes} min / ${suggestion.energyType} / ${suggestion.reason}|">reason</em>
                     </span>
                 </label>

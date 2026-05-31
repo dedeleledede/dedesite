@@ -20,18 +20,25 @@
         <label>Status <select th:field="*{status}"><option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option></select></label>
         <label>Priority <select th:field="*{priority}"><option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}"></option></select></label>
         <label>Estimated weekly hours <input type="number" step="0.5" min="0" th:field="*{estimatedWeeklyHours}"></label>
-        <label>Deadline <input type="date" th:field="*{deadline}"></label>
+        <label>Deadline <input type="date" lang="pt-BR" th:field="*{deadline}"></label>
         <label>Energy <select th:field="*{energyType}"><option th:each="energyType : ${energyTypes}" th:value="${energyType}" th:text="${energyType}"></option></select></label>
         <button class="button primary" type="submit" th:text="${editId == null} ? 'Create Star System' : 'Save Star System'">Create Star System</button>
     </form>
 
     <div class="starSystem-board system-map">
-        <article class="starSystem-card" th:each="starSystem : ${starSystems}">
+        <article class="starSystem-card" th:each="starSystem : ${starSystems}"
+                 th:classappend="${totalStarCounts[starSystem.id] == 0 ? ' system-density-empty' : (totalStarCounts[starSystem.id] <= 2 ? ' system-density-sparse' : (totalStarCounts[starSystem.id] <= 5 ? ' system-density-active' : ' system-density-dense'))}">
             <div class="system-orbit-visual" aria-hidden="true">
                 <span class="system-core"></span>
                 <span class="system-orbit first"></span>
                 <span class="system-orbit second"></span>
-                <span class="system-satellite"></span>
+                <span class="system-star star-1" th:if="${totalStarCounts[starSystem.id] > 0}"></span>
+                <span class="system-star star-2" th:if="${totalStarCounts[starSystem.id] > 1}"></span>
+                <span class="system-star star-3" th:if="${totalStarCounts[starSystem.id] > 2}"></span>
+                <span class="system-star star-4" th:if="${totalStarCounts[starSystem.id] > 3}"></span>
+                <span class="system-star star-5" th:if="${totalStarCounts[starSystem.id] > 4}"></span>
+                <span class="system-star star-6" th:if="${totalStarCounts[starSystem.id] > 5}"></span>
+                <span class="system-star star-7" th:if="${totalStarCounts[starSystem.id] > 8}"></span>
             </div>
             <div class="starSystem-card-topline">
                 <span th:text="${starSystem.status}">ACTIVE</span>
@@ -43,6 +50,7 @@
                 <span th:text="|weekly ${starSystem.estimatedWeeklyHours ?: 0}h|">weekly</span>
                 <span th:text="${starSystem.deadline != null ? 'deadline ' + starSystem.deadline : 'no deadline'}">deadline</span>
                 <span th:text="|open Stars ${openStarCounts[starSystem.id]}|">open</span>
+                <span th:text="|total Stars ${totalStarCounts[starSystem.id]}|">total</span>
             </div>
             <div class="next-star">
                 <span>next Star</span>

@@ -16,6 +16,8 @@ docker compose -f docker-compose.prod.yml up -d --build
 Put the first random value in both `SPRING_DATASOURCE_PASSWORD` and `POSTGRES_PASSWORD`.
 Put the second random value in `OBSERVATORY_ENCRYPTION_KEY`.
 Set `APP_PUBLIC_URL` to the public HTTPS origin used by the Cloudflare Tunnel.
+Admins can edit the home-page `now building` signal at `/admin/site-settings`.
+Admins can also configure the optional Last.fm listening signal there. The Last.fm API key is encrypted before storage.
 
 The `.env` file stays only on the server and is ignored by Git. Keep a secure backup of
 `OBSERVATORY_ENCRYPTION_KEY`: losing or changing it makes existing Observatory ciphertext unreadable.

@@ -34,16 +34,16 @@
             <h1 th:unless="${#authorization.expression('isAuthenticated()')}">
                 WELCOME USER <span class="welcome-identity" th:text="${#numbers.formatInteger(visitorNumber, 3)}">001</span>
             </h1>
-            <p class="hero-text">
+            <p class="hero-text" th:text="${siteSettings.homeIntro}">
                 my corner of the internet for blog posts, projects, music notes, guestbook traces, and whatever else gets wired in next.
             </p>
         </div>
 
         <aside class="poster-readout">
             <div class="project-signal">
-                <span>now building</span>
-                <strong>dedesite / S&amp;S / star_byte</strong>
-                <p>projects page rewired with current work and source links.</p>
+                <span th:text="${siteSettings.nowBuildingLabel}">now building</span>
+                <strong th:text="${siteSettings.nowBuildingTitle}">dedesite / S&amp;S / star_byte</strong>
+                <p th:text="${siteSettings.nowBuildingNote}">projects page rewired with current work and source links.</p>
             </div>
             <div>
                 <span>last update</span>
@@ -70,7 +70,7 @@
             <p th:text="${latestPost.content}">post excerpt</p>
             <footer>
                 <time th:datetime="${latestPost.createdAt}"
-                      th:text="${#temporals.format(latestPost.createdAt, 'dd/MM/yyyy HH:mm')}">
+                      th:text="${#temporals.format(latestPost.createdAt, 'yyyy-MM-dd HH:mm')}">
                     date
                 </time>
                 <a th:href="@{/blog}">read blog</a>
@@ -90,14 +90,35 @@
         <a th:href="@{/profile}">Profile</a>
     </nav>
 
+    <div class="home-signal-row">
+        <section class="status-panel poster-status lastfm-status">
+            <div th:if="${lastFmTrack != null}">
+                <h2 th:text="${lastFmTrack.nowPlaying ? 'now listening' : 'last.fm signal'}">last.fm signal</h2>
+                <p><strong th:text="${lastFmTrack.artist}">artist</strong> / <span th:text="${lastFmTrack.title}">track</span></p>
+                <p th:if="${!#strings.isEmpty(lastFmTrack.album)}" th:text="${lastFmTrack.album}">album</p>
+            </div>
+            <div th:unless="${lastFmTrack != null}">
+                <h2>last.fm signal</h2>
+                <p th:text="${siteSettings.lastFmEmptyText}">no recent transmission.</p>
+            </div>
+        </section>
+        <section class="status-panel poster-status broadcast-status" th:if="${siteSettings.broadcastEnabled}">
+            <div>
+                <h2 th:text="${siteSettings.broadcastTitle}">broadcast</h2>
+                <p th:text="${siteSettings.broadcastMessage}">signal pending.</p>
+            </div>
+        </section>
+    </div>
+
     <section class="status-panel poster-status">
         <div>
-            <h2>site status</h2>
-            <p>Running from <strong>theconstellation</strong>, deployed automatically from GitHub.</p>
+            <h2 th:text="${siteSettings.siteStatusTitle}">site status</h2>
+            <p th:text="${siteSettings.siteStatusNote}">Running from theconstellation, deployed automatically from GitHub.</p>
             <p>last update: <span th:text="${lastUpdateDistance}">just now</span></p>
         </div>
         <a class="button" th:href="@{/health}">Check health</a>
     </section>
+    <a class="button" th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/site-settings}">Edit site settings</a>
 </section>
 </body>
 

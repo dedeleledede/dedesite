@@ -23,8 +23,11 @@
         <a th:href="@{/observatory/launch-windows}">Launch Windows</a>
         <a th:href="@{/observatory/chart-course}">Chart Course</a>
         <a th:href="@{/observatory/search}">Search</a>
-        <a th:href="@{/observatory(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
     </nav>
+    <div class="clock-setup">
+        <span>Clock setup</span>
+        <a class="button" th:href="@{/observatory(timeFormat=${timeFormatToggle})}" th:text="${timeFormat}">24h</a>
+    </div>
 
     <div class="mission-focus" th:if="${mission.mainFocus != null}">
         <span>recommended main focus</span>
@@ -36,7 +39,7 @@
             <h2>Today's Orbit</h2>
             <p class="empty-state" th:if="${#lists.isEmpty(mission.todayOrbits)}">No fixed Orbits today.</p>
             <ul class="astro-list">
-                <li th:each="orbit : ${mission.todayOrbits}">
+                <li class="orbit-summary" th:each="orbit : ${mission.todayOrbits}" th:style="|--orbit-color: ${observatoryService.orbitColor(orbit.colorKey)}|">
                     <strong th:text="${orbit.title}">Work</strong>
                     <span th:text="${observatoryService.formatRange(orbit.startTime, orbit.endTime, twelveHourClock)}">09:00 - 10:00</span>
                     <em th:text="${orbit.category}">WORK</em>

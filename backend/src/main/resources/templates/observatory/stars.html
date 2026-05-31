@@ -14,10 +14,13 @@
         <a th:href="@{/observatory}">Mission Control</a>
         <a th:href="@{/observatory/stars}">all</a>
         <a th:each="status : ${statuses}" th:href="@{/observatory/stars(status=${status})}" th:text="${status}">READY</a>
-        <a th:href="@{/observatory/stars(timeFormat=${timeFormatToggle})}" th:text="|Clock: ${timeFormat}|">Clock: 24h</a>
         <a th:href="@{/observatory/pulsars}">Pulsars</a>
         <a th:href="@{/observatory/chart-course}">Chart Course</a>
     </nav>
+    <div class="clock-setup">
+        <span>Clock setup</span>
+        <a class="button" th:href="@{/observatory/stars(timeFormat=${timeFormatToggle})}" th:text="${timeFormat}">24h</a>
+    </div>
 
     <form class="observatory-form" th:action="${editId == null} ? @{/observatory/stars} : @{/observatory/stars/{publicId}(publicId=${editId})}" th:object="${star}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -37,18 +40,16 @@
         </fieldset>
         <fieldset class="star-form-section flight-plan">
             <legend>Flight Plan</legend>
-            <label>Due date <input type="date" th:field="*{dueDate}"></label>
+            <label>Due date <input type="date" lang="pt-BR" th:field="*{dueDate}"></label>
             <label>Estimated minutes <input type="number" min="0" th:field="*{estimatedMinutes}"></label>
-            <label th:if="${twelveHourClock}">Scheduled start <input type="datetime-local" lang="en-GB" th:field="*{scheduledStart}"></label>
-            <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
-                <label>Start date <input class="observatory-date-entry" type="date" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'yyyy-MM-dd') : ''}"></label>
-                <label>Start time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'HH:mm') : ''}"></label>
+            <div class="observatory-datetime-parts">
+                <label>Start date <input class="observatory-date-entry" type="date" lang="pt-BR" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'yyyy-MM-dd') : ''}"></label>
+                <label>Start time <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" lang="en-GB" th:value="${star.scheduledStart != null ? #temporals.format(star.scheduledStart, 'HH:mm') : ''}"></label>
                 <input type="hidden" th:field="*{scheduledStart}">
             </div>
-            <label th:if="${twelveHourClock}">Scheduled end <input type="datetime-local" lang="en-GB" th:field="*{scheduledEnd}"></label>
-            <div class="observatory-datetime-parts" th:unless="${twelveHourClock}">
-                <label>End date <input class="observatory-date-entry" type="date" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'yyyy-MM-dd') : ''}"></label>
-                <label>End time <input class="observatory-time-entry" type="text" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'HH:mm') : ''}"></label>
+            <div class="observatory-datetime-parts">
+                <label>End date <input class="observatory-date-entry" type="date" lang="pt-BR" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'yyyy-MM-dd') : ''}"></label>
+                <label>End time <input th:type="${twelveHourClock} ? 'time' : 'text'" th:classappend="${!twelveHourClock} ? 'observatory-time-entry'" inputmode="numeric" pattern="[0-2][0-9]:[0-5][0-9]" placeholder="HH:mm" lang="en-GB" th:value="${star.scheduledEnd != null ? #temporals.format(star.scheduledEnd, 'HH:mm') : ''}"></label>
                 <input type="hidden" th:field="*{scheduledEnd}">
             </div>
         </fieldset>

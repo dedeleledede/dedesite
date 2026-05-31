@@ -20,6 +20,7 @@ public interface StarRepository extends JpaRepository<Star, Long> {
     List<Star> findByUserAndScheduledStartIsNullAndScheduledEndIsNullAndStatusNotOrderByDueDateAscCreatedAtAsc(User user, Star.Status status);
     List<Star> findByUserAndDueDateBetweenAndStatusNotOrderByDueDateAsc(User user, LocalDate start, LocalDate end, Star.Status status);
     List<Star> findByUserAndDueDateBeforeAndStatusNotOrderByDueDateAsc(User user, LocalDate date, Star.Status status);
+    long countByUserAndStarSystem(User user, StarSystem starSystem);
     long countByUserAndStarSystemAndStatusNot(User user, StarSystem starSystem, Star.Status status);
     Optional<Star> findFirstByUserAndStarSystemAndStatusNotOrderByDueDateAscCreatedAtAsc(User user, StarSystem starSystem, Star.Status status);
     Optional<Star> findByIdAndUser(Long id, User user);

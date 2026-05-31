@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Site Settings - dedesite</title>
+</head>
+<body>
+<section class="window-card">
+    <h1>Site Settings</h1>
+    <p th:if="${saved}">settings saved.</p>
+    <form class="site-settings-form" th:action="@{/admin/site-settings}" th:object="${siteSettings}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <fieldset>
+            <legend>Home project signal</legend>
+            <div class="field-group">
+                <label for="homeIntro">Home intro</label>
+                <textarea id="homeIntro" th:field="*{homeIntro}" maxlength="480" required></textarea>
+            </div>
+            <div class="field-group">
+                <label for="nowBuildingLabel">Project signal label</label>
+                <input id="nowBuildingLabel" th:field="*{nowBuildingLabel}" maxlength="80" required>
+            </div>
+            <div class="field-group">
+                <label for="nowBuildingTitle">Now building title</label>
+                <input id="nowBuildingTitle" th:field="*{nowBuildingTitle}" maxlength="160" required>
+            </div>
+            <div class="field-group">
+                <label for="nowBuildingNote">Now building note</label>
+                <textarea id="nowBuildingNote" th:field="*{nowBuildingNote}" maxlength="320" required></textarea>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Site status</legend>
+            <div class="field-group">
+                <label for="siteStatusTitle">Status title</label>
+                <input id="siteStatusTitle" th:field="*{siteStatusTitle}" maxlength="80" required>
+            </div>
+            <div class="field-group">
+                <label for="siteStatusNote">Public status note</label>
+                <textarea id="siteStatusNote" th:field="*{siteStatusNote}" maxlength="320" required></textarea>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Last.fm signal</legend>
+            <label class="check-row"><input type="checkbox" th:field="*{lastFmEnabled}"> show Last.fm signal on home</label>
+            <div class="field-group">
+                <label for="lastFmUsername">Last.fm username</label>
+                <input id="lastFmUsername" th:field="*{lastFmUsername}" maxlength="120">
+            </div>
+            <div class="field-group">
+                <label for="lastFmApiKey">Last.fm API key</label>
+                <input id="lastFmApiKey" type="password" name="lastFmApiKey" maxlength="255" autocomplete="new-password" placeholder="leave blank to keep current key">
+            </div>
+            <div class="field-group">
+                <label for="lastFmEmptyText">Empty signal text</label>
+                <input id="lastFmEmptyText" th:field="*{lastFmEmptyText}" maxlength="160" required>
+            </div>
+            <p>The API key is stored encrypted. Create one at <a href="https://www.last.fm/api/account/create">last.fm/api/account/create</a>.</p>
+        </fieldset>
+        <fieldset>
+            <legend>Broadcast</legend>
+            <label class="check-row"><input type="checkbox" th:field="*{broadcastEnabled}"> show broadcast on home</label>
+            <div class="field-group">
+                <label for="broadcastTitle">Broadcast title</label>
+                <input id="broadcastTitle" th:field="*{broadcastTitle}" maxlength="80" required>
+            </div>
+            <div class="field-group">
+                <label for="broadcastMessage">Broadcast message</label>
+                <textarea id="broadcastMessage" th:field="*{broadcastMessage}" maxlength="320" required></textarea>
+            </div>
+        </fieldset>
+        <button class="button primary" type="submit">Save</button>
+        <a class="button" th:href="@{/}">Back home</a>
+    </form>
+</section>
+</body>
+</html>

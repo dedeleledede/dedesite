@@ -107,6 +107,8 @@ public class StarSystemController {
         var starSystems = starSystemService.findAll(user);
         Map<Long, Long> openStarCounts = starSystems.stream()
                 .collect(Collectors.toMap(StarSystem::getId, item -> starService.countOpen(user, item)));
+        Map<Long, Long> totalStarCounts = starSystems.stream()
+                .collect(Collectors.toMap(StarSystem::getId, item -> starService.countAll(user, item)));
         Map<Long, String> nextStars = starSystems.stream()
                 .collect(Collectors.toMap(StarSystem::getId, item -> starService.nextOpen(user, item).map(star -> star.getTitle()).orElse("none")));
         model.addAttribute("starSystems", starSystems);
@@ -116,6 +118,7 @@ public class StarSystemController {
         model.addAttribute("priorities", StarSystem.Priority.values());
         model.addAttribute("energyTypes", StarSystem.EnergyType.values());
         model.addAttribute("openStarCounts", openStarCounts);
+        model.addAttribute("totalStarCounts", totalStarCounts);
         model.addAttribute("nextStars", nextStars);
     }
 }

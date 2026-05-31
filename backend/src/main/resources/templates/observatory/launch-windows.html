@@ -27,7 +27,7 @@
         <p class="empty-state" th:if="${#lists.isEmpty(launchWindows)}">No Launch Windows found.</p>
         <article class="observatory-row" th:each="window : ${launchWindows}">
             <div>
-                <strong th:text="${#temporals.format(window.start, 'EEEE dd/MM')}">Monday</strong>
+                <strong th:text="${#temporals.format(window.start, 'EEEE yyyy-MM-dd')}">Monday 2026-05-25</strong>
                 <span th:text="|${#temporals.format(window.start, 'HH:mm')} - ${#temporals.format(window.end, 'HH:mm')}|">08:00 - 09:00</span>
                 <em th:text="|${window.minutes()} min / ${window.recommendedEnergyType}|">60 min</em>
             </div>

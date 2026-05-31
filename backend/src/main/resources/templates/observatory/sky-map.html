@@ -9,10 +9,10 @@
         <p class="observatory-kicker">Observatory</p>
         <h1>Sky Map</h1>
         <div class="sky-calendar-heading">
-            <strong th:text="${#temporals.format(skyMap.weekStart, 'MMMM yyyy')}">May 2026</strong>
+            <strong th:text="${#temporals.format(skyMap.weekStart, 'yyyy-MM')}">2026-05</strong>
             <span th:if="${skyMap.weekStart.month != skyMap.weekEnd.month}"
-                  th:text="|to ${#temporals.format(skyMap.weekEnd, 'MMMM yyyy')}|">to June 2026</span>
-            <small th:text="|week ${#temporals.format(skyMap.weekStart, 'dd')} - ${#temporals.format(skyMap.weekEnd, 'dd')}|">week 25 - 31</small>
+                  th:text="|to ${#temporals.format(skyMap.weekEnd, 'yyyy-MM')}|">to 2026-06</span>
+            <small th:text="|week ${#temporals.format(skyMap.weekStart, 'yyyy-MM-dd')} - ${#temporals.format(skyMap.weekEnd, 'yyyy-MM-dd')}|">week 2026-05-25 - 2026-05-31</small>
         </div>
     </div>
     <nav class="observatory-tabs" aria-label="Observatory sections">
@@ -51,8 +51,8 @@
         <div class="sky-day-detail-heading">
             <div>
                 <p class="observatory-kicker">Day Timeline</p>
-                <h2 th:text="${#temporals.format(selectedDay, 'EEEE dd')}">MONDAY 25</h2>
-                <small th:text="${#temporals.format(selectedDay, 'MMMM yyyy')}">May 2026</small>
+                <h2 th:text="${#temporals.format(selectedDay, 'EEEE')}">MONDAY</h2>
+                <small th:text="${#temporals.format(selectedDay, 'yyyy-MM-dd')}">2026-05-25</small>
             </div>
             <a class="button" th:href="@{/observatory/sky-map(week=${skyMap.weekStart},timeFormat=${twelveHourClock ? '12' : '24'})}">Close</a>
         </div>
@@ -82,12 +82,12 @@
                 <th scope="row">
                     <a class="sky-day-link" th:href="@{/observatory/sky-map(week=${skyMap.weekStart},day=${day.date},timeFormat=${twelveHourClock ? '12' : '24'})}">
                         <span th:text="${day.date.dayOfWeek}">MONDAY</span>
-                        <small th:text="${#temporals.format(day.date, 'dd')}">25</small>
+                        <small th:text="${#temporals.format(day.date, 'yyyy-MM-dd')}">2026-05-25</small>
                     </a>
                 </th>
                 <td>
                     <span class="empty-state" th:if="${#lists.isEmpty(day.orbits)}">clear</span>
-                    <span class="sky-pill" th:each="orbit : ${day.orbits}">
+                    <span class="sky-pill orbit-pill" th:each="orbit : ${day.orbits}" th:style="|--orbit-color: ${observatoryService.orbitColor(orbit.colorKey)}|">
                         <strong th:text="${orbit.title}">Orbit</strong>
                         <small th:text="${observatoryService.formatRange(orbit.startTime, orbit.endTime, twelveHourClock)}">time</small>
                     </span>

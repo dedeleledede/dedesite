@@ -74,7 +74,7 @@ public class Orbit {
     @JoinColumn(name = "star_system_id")
     private StarSystem starSystem;
 
-    private String colorKey = "violet";
+    private String colorKey = "#b8b0a2";
     private boolean active = true;
     private boolean autoSchedule;
     private LocalDateTime createdAt = LocalDateTime.now();

@@ -52,6 +52,7 @@ public class SecurityConfig {
                 // arquivos públicos (imagens)
                 .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 .requestMatchers("/observatory/**").authenticated()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 // páginas públicas
                 .requestMatchers("/", "/blog", "/blog/**", "/guestbook", "/guestbook/**", "/projects", "/music", "/gerp", "/profile", "/chat", "/themes", "/anonymous", "/apps", "/gooncorner", "/login", "/register", "/health", "/presence/ping", "/access-denied", "/error", "/favicon.ico").permitAll()
                 // estáticos comuns (se tiver)

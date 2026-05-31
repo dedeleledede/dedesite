@@ -9,7 +9,7 @@
     <a class="button" th:href="@{/blog}">back to blog</a>
 
     <article class="post-full">
-        <time th:datetime="${post.createdAt}" th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}">Data</time>
+        <time th:datetime="${post.createdAt}" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">Data</time>
         <h1 th:text="${post.title}">Titulo</h1>
 
         <div class="post-content" th:if="${post.contentHtml != null and !#strings.isEmpty(post.contentHtml)}"

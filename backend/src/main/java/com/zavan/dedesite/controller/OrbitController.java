@@ -109,9 +109,29 @@ public class OrbitController {
         model.addAttribute("days", DayOfWeek.values());
         model.addAttribute("categories", Orbit.Category.values());
         model.addAttribute("kinds", List.of(Orbit.Kind.LOCKED, Orbit.Kind.REST, Orbit.Kind.MAINTENANCE, Orbit.Kind.ECLIPSE));
+        model.addAttribute("colors", List.of(
+                new OrbitColor("#b8b0a2", "Ash"),
+                new OrbitColor("#b31312", "Signal red"),
+                new OrbitColor("#f4eedf", "Paper"),
+                new OrbitColor("#66717e", "Steel"),
+                new OrbitColor("#879c74", "Moss"),
+                new OrbitColor("#8d6b94", "Bruise"),
+                new OrbitColor("#4f7f86", "Petrol"),
+                new OrbitColor("#d17a52", "Rust"),
+                new OrbitColor("#887f58", "Brass"),
+                new OrbitColor("#7d5f5f", "Dust rose"),
+                new OrbitColor("#576b8a", "Blueprint"),
+                new OrbitColor("#7f6d54", "Cardboard"),
+                new OrbitColor("#5f765a", "Fern"),
+                new OrbitColor("#9b7250", "Copper"),
+                new OrbitColor("#6e627f", "Dusk"),
+                new OrbitColor("#3f6e70", "Deep sea")
+        ));
         model.addAttribute("observatoryService", observatoryService);
         model.addAttribute("twelveHourClock", twelveHourClock);
         model.addAttribute("timeFormat", observatoryService.timeFormatLabel(twelveHourClock));
         model.addAttribute("timeFormatToggle", observatoryService.oppositeTimeFormat(twelveHourClock));
     }
+
+    public record OrbitColor(String value, String label) {}
 }

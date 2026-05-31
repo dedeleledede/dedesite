@@ -21,7 +21,7 @@
     <div class="blog-post-list" th:if="${posts != null and !#lists.isEmpty(posts)}">
         <article class="blog-card" th:each="post : ${posts}">
             <a class="blog-card-link" th:href="@{'/blog/' + ${post.id}}">
-                <time th:datetime="${post.createdAt}" th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}">Data</time>
+                <time th:datetime="${post.createdAt}" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">Data</time>
                 <h2 th:text="${post.title}">Titulo</h2>
                 <p th:text="${#strings.abbreviate(post.content, 220)}">excerpt</p>
                 <span>read post</span>

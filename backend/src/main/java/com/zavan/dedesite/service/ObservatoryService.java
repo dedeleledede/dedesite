@@ -217,6 +217,15 @@ public class ObservatoryService {
         return formatTime(window.start(), twelveHourClock) + " - " + end;
     }
 
+    public String orbitColor(String colorKey) {
+        return switch (colorKey == null ? "" : colorKey) {
+            case "#b31312", "#f4eedf", "#b8b0a2", "#66717e", "#879c74", "#8d6b94",
+                    "#4f7f86", "#d17a52", "#887f58", "#7d5f5f", "#576b8a", "#7f6d54",
+                    "#5f765a", "#9b7250", "#6e627f", "#3f6e70" -> colorKey;
+            default -> "#b8b0a2";
+        };
+    }
+
     private Duration durationBetween(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null || !end.isAfter(start)) {
             return Duration.ZERO;

@@ -42,6 +42,10 @@ public class StarService {
         return starRepository.countByUserAndStarSystemAndStatusNot(user, starSystem, Star.Status.DONE);
     }
 
+    public long countAll(User user, StarSystem starSystem) {
+        return starRepository.countByUserAndStarSystem(user, starSystem);
+    }
+
     public Optional<Star> nextOpen(User user, StarSystem starSystem) {
         return starRepository.findFirstByUserAndStarSystemAndStatusNotOrderByDueDateAscCreatedAtAsc(user, starSystem, Star.Status.DONE);
     }

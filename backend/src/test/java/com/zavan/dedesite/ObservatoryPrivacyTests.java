@@ -11,12 +11,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.zavan.dedesite.model.Comet;
 import com.zavan.dedesite.model.Orbit;
+import com.zavan.dedesite.model.SiteSettings;
 import com.zavan.dedesite.model.Star;
 import com.zavan.dedesite.model.StarSystem;
 import com.zavan.dedesite.model.User;
 import com.zavan.dedesite.config.LegacyPulsarMigration;
 import com.zavan.dedesite.repository.CometRepository;
 import com.zavan.dedesite.repository.OrbitRepository;
+import com.zavan.dedesite.repository.SiteSettingsRepository;
 import com.zavan.dedesite.repository.StarRepository;
 import com.zavan.dedesite.repository.StarSystemRepository;
 import com.zavan.dedesite.repository.UserRepository;
@@ -24,6 +26,7 @@ import com.zavan.dedesite.service.CometService;
 import com.zavan.dedesite.service.ChartCourseService;
 import com.zavan.dedesite.service.ObservatorySearchService;
 import com.zavan.dedesite.service.ObservatoryService;
+import com.zavan.dedesite.service.SiteSettingsService;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,9 +49,11 @@ class ObservatoryPrivacyTests {
     @Autowired StarSystemRepository starSystemRepository;
     @Autowired StarRepository starRepository;
     @Autowired OrbitRepository orbitRepository;
+    @Autowired SiteSettingsRepository siteSettingsRepository;
     @Autowired CometRepository cometRepository;
     @Autowired ObservatorySearchService observatorySearchService;
     @Autowired ObservatoryService observatoryService;
+    @Autowired SiteSettingsService siteSettingsService;
     @Autowired CometService cometService;
     @Autowired ChartCourseService chartCourseService;
     @Autowired LegacyPulsarMigration legacyPulsarMigration;
@@ -63,6 +68,7 @@ class ObservatoryPrivacyTests {
         starRepository.deleteAll();
         orbitRepository.deleteAll();
         starSystemRepository.deleteAll();
+        siteSettingsRepository.deleteAll();
         userRepository.deleteAll();
         alice = saveUser("alice");
         bobby = saveUser("bobby");
@@ -73,6 +79,34 @@ class ObservatoryPrivacyTests {
         mockMvc.perform(get("/observatory"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    void siteSettingsRequireAdminRole() throws Exception {
+        mockMvc.perform(get("/admin/site-settings").with(user("alice").roles("USER")))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/admin/site-settings").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void lastFmApiKeyIsEncryptedInSiteSettings() {
+        SiteSettings settings = new SiteSettings();
+        settings.setLastFmEnabled(true);
+        settings.setLastFmUsername("listener");
+        settings.setLastFmApiKey("private-lastfm-api-key");
+        siteSettingsService.save(settings);
+        siteSettingsRepository.flush();
+
+        String raw = jdbcTemplate.queryForObject(
+                "select encrypted_lastfm_api_key from site_settings where id = 1",
+                String.class
+        );
+
+        assertThat(raw).startsWith("v1:");
+        assertThat(raw).doesNotContain("private-lastfm-api-key");
+        assertThat(siteSettingsService.get().getLastFmApiKey()).isEqualTo("private-lastfm-api-key");
     }
 
     @Test
